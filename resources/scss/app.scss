@@ -1,0 +1,12 @@
+// @use 'base';
+// @use 'mixins';
+
+// %message-shared {
+//     border: 1px solid #ccc;
+//     padding: 10px;
+//     color: violet;
+// }
+// .body {
+//     background-color: base.$primary-color;
+//     @extend %message-shared;
+// }

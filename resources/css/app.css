@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+@import 'bootstrap/dist/css/bootstrap.css';
+@import 'vue3-form-wizard/dist/style.css';
+@import '@fortawesome/fontawesome-free/css/all.min.css';;
+@import '@vuepic/vue-datepicker/dist/main.css';
+@import 'vue-multiselect/dist/vue-multiselect.css';
+@import "nprogress/nprogress.css";
+@import 'vue-loading-overlay/dist/css/index.css';
+
+body {
+    font-family: 'Roboto', sans-serif !important;
+    overflow-x: hidden;
+}
+
+html {
+    scroll-behavior: smooth;
+  }
+
+::-webkit-scrollbar {
+  width: 15px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 2px;
+}
+
+.icon-option{
+  font-size:25px !important;
+}
