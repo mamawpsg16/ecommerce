@@ -1,6 +1,6 @@
 <template>
     <div class="row">
-        <div class="col-8 mx-auto my-2">
+        <div class="col-10 mx-auto my-2">
             <div class="card mb-2 p-3" style="height:100% !important;">
                 <div class="col-12">
                     <span class="fw-bold">Category :</span> {{ details.categories }}

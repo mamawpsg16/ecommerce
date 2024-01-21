@@ -1,17 +1,22 @@
 <template>
-    <div class="row">
+    <div class="row mt-3">
         <div class="col-12 my-2">
             <div class="d-flex justify-content-between align-items-center">
-                <router-link class="ms-5 me-5 text-dark icon-option" :to="{ name: 'home' }">
-                    <i class="fa-solid fa-house fs-5" alt="home"></i>
+                <router-link class="ms-5 me-5 text-dark" :to="{ name: 'home' }">
+                    <i class="fa-solid fa-house fs-5  icon-option" alt="home"></i>
                 </router-link>
                 <VueMultiselect v-model="search" @select="onSelectProduct" @input="debouncedCheckProductExistence($event)" :loading="isLoading" :preserveSearch="true" :closeOnSelect="false" placeholder="Search..." :options="options" style="width:80%;" class="me-4"  label="label" track-by="label"></VueMultiselect>
                 <div class="d-flex align-items-center">
-                    <router-link  type="button" to="/product" class="ms-2 text-dark">
+                    <router-link type="button" to="/cart" class="ms-4 text-dark position-relative">
                         <i class="fa-solid fa-cart-shopping me-2 icon-option"></i>
+                        <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">
+                            5 <!-- Put your badge count here -->
+                            <span class="visually-hidden">unread messages</span>
+                        </span>
                     </router-link>
+
                     <div class="dropdown  me-5">
-                        <router-link data-bs-toggle="dropdown" aria-expanded="false" type="button" class="ms-5 me-5 text-dark" to="#">
+                        <router-link data-bs-toggle="dropdown" aria-expanded="false" type="button" class="ms-4 me-5 text-dark" to="#">
                             <i class="fa-solid fa-gear icon-option"></i>
                         </router-link>
                         <ul class="dropdown-menu">
