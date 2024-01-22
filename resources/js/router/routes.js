@@ -5,7 +5,6 @@
  * ? TF
  * TODO:sheesh
  */
-const Dashboard = { template: '<div>Dashboard</div>' }
 const routes = [
     {
         path: "/:pathMatch(.*)*",
@@ -72,6 +71,11 @@ const routes = [
         path: "/cart",
         name: "cart-index",
         component: () => import("@/views/User/Cart.vue")
+    },
+    {
+        path: "/typescript",
+        name: "typescript",
+        component: () => import("@/views/TsExample.vue")
     },
    
 

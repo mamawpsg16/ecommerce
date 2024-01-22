@@ -284,7 +284,7 @@ import { required, email, maxLength, minLength } from '@vuelidate/validators';
 import { deepClone } from '@/helpers/PartialHelpers/index.js';
 import { checkValidity, checkLoopValidity, checkLoopErrors } from '@/helpers/Vuelidate/InputValidation.js';
 import { swalConfirmation, swalSuccess, swalError, SwalDefault } from '@/helpers/Notification/sweetAlert.js';
-import { formatDate, titleCase } from '@/helpers/Formatter/index.js';
+import { formatDate, titleCase } from '@/helpers/Formatter/Date.js';
 import debounce from 'lodash/debounce'; 
     export default {
         name:'Student Details',

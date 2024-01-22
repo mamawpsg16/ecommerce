@@ -16,9 +16,9 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-
+    public function index(Request $request)
+    {   
+       
         $products = Product::select('products.id', 'products.name', 'products.description', 'shops.name as shop_name', 'products.price', 'products.quantity', 'products.active', 'products.created_at', 'products.updated_at',DB::raw('GROUP_CONCAT(categories.name SEPARATOR ", ") as categories'))
             ->Join('shops', 'products.shop_id', '=', 'shops.id')
             ->Join('category_product', 'products.id', '=', 'category_product.product_id')
@@ -164,10 +164,12 @@ class ProductController extends Controller
                     return response(['errors' => $validator->errors()], 422);
                 }
                 
+                $user_id = $request->user()->id;
+                
                 $data = $validator->validated();
                 
                 $product = Product::find($data['product_id']);
-                $data['user_id'] = $request->user()->id;
+                $data['user_id'] = $user_id;
                 CartItem::create($data);
 
                 if ($product) {
@@ -179,7 +181,9 @@ class ProductController extends Controller
                     $product->update(['quantity' => $newQuantity]);
                 }
 
-                return response(['message' => 'Added to cart', 'data' => $product->load(['shop'])]);
+                $cart_items_count = CartItem::where('user_id', $user_id)->count();
+
+                return response(['message' => 'Added to cart', 'data' => $product->load(['shop']), 'cart_items_count' => $cart_items_count]);
             });
         } catch (\Exception $e) {
             DB::rollback();

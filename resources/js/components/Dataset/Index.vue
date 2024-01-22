@@ -4,10 +4,12 @@
              v-slot="{ ds }"
              :ds-data="data"
              :ds-sortby="sortBy(columns)"
+         
+             ref="dataset"
          >
          <div class="d-flex justify-content-between align-items-center mb-2" :data-page-count="ds.dsPagecount">
              <div class="mb-2 mb-md-0">
-             <dataset-show />
+             <dataset-show/>
              </div>
              <div class="col-md-4">
              <dataset-search ds-search-placeholder="Search..." />

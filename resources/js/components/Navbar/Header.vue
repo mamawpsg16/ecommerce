@@ -9,10 +9,11 @@
                 <div class="d-flex align-items-center">
                     <router-link type="button" to="/cart" class="ms-4 text-dark position-relative">
                         <i class="fa-solid fa-cart-shopping me-2 icon-option"></i>
-                        <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">
-                            5 <!-- Put your badge count here -->
-                            <span class="visually-hidden">unread messages</span>
-                        </span>
+                        <template v-if="cart.count">
+                            <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">
+                                {{ cart.count }}
+                            </span>
+                        </template>
                     </router-link>
 
                     <div class="dropdown  me-5">
@@ -40,12 +41,14 @@
 import { swalConfirmation } from '@/helpers/Notification/sweetAlert.js';
 import VueMultiselect from 'vue-multiselect'
 import { useProductStore } from '@/stores/search.js';
+import { useCartStore } from '@/stores/cart.js';
 import debounce from 'lodash/debounce';
 export default {
     data() {
         return {
             search: null,
             product: useProductStore(),
+            cart: useCartStore(),
             token: localStorage.getItem('auth-token'),
             options: [],
             items: [],

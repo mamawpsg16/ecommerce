@@ -62,7 +62,7 @@
 
 <script>
 import Loading from 'vue-loading-overlay';
-import { formatDate } from '@/helpers/Formatter/index.js';
+import { formatDate } from '@/helpers/Formatter/Date.js';
 import { Dataset, DatasetItem, DatasetInfo, DatasetPager, DatasetSearch, DatasetShow } from 'vue-dataset'
 import { sortBy, onColumnSort } from '@/helpers/Dataset/sort.js';
 export default {

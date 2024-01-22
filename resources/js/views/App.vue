@@ -9,6 +9,7 @@
 <script>
 import defaultProduct from '@/../../public/storage/default_images/product.png';
 import {isAuthenticated as checkIsAuthenticated} from '@/helpers/Auth/isAuthenticated.js'; 
+import { useCartStore } from '@/stores/cart.js';
 import axios from 'axios';
 import Navbar from '@/components/Navbar/Header.vue';
     export default {
@@ -19,6 +20,8 @@ import Navbar from '@/components/Navbar/Header.vue';
                 isUserAuthenticated: false,
                 logo:defaultProduct,
                 search:null,
+                cart: useCartStore(),
+
             }
         },
         components:{
@@ -31,6 +34,7 @@ import Navbar from '@/components/Navbar/Header.vue';
         },
         async created() {
             await this.checkAuthentication();
+            this.getPartials();
         },
         methods:{
             async checkAuthentication() {
@@ -41,6 +45,22 @@ import Navbar from '@/components/Navbar/Header.vue';
                     console.error('Error checking authentication:', error);
                 }
             },
+
+            getPartials(){
+                axios.get('/api/get-partials', {
+                    headers: {
+                        Authorization: `Bearer ${this.token}`
+                    },
+                }).then((response) => {
+                    const { cart_items_count } = response.data;
+
+                    this.cart.setCount(cart_items_count);
+                    
+                }).catch((error) => {
+                    this.isLoading = false;
+                    console.log(error);
+                })
+            }
         }
     }
 </script>

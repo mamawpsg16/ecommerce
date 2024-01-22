@@ -50,7 +50,7 @@ import { generateUniqueSlug } from '@/helpers/PartialHelpers/index.js';
     export default {
         name:'Shop Create',
         setup () {
-            return { v$: useVuelidate({ $autoDirty: true ,student: {} }) }
+            return { v$: useVuelidate({ $autoDirty: true }) }
         },
         emits: ['loadUpdatedShops'],
         data(){

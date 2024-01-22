@@ -63,7 +63,7 @@ import { swalConfirmation, SwalDefault } from '@/helpers/Notification/sweetAlert
         },
         emits: ['updateShop'],
         setup () {
-            return { v$: useVuelidate({ $autoDirty: true ,shop: {} }) }
+            return { v$: useVuelidate({ $autoDirty: true }) }
         },
         data(){
             return{

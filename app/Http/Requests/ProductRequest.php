@@ -26,7 +26,7 @@ class ProductRequest extends FormRequest
         
         return [
             'id' => ['sometimes', 'integer'],
-            'image' => ['sometimes', 'image','nullable','mimes:jpeg,jpg,png'],
+            'image' => ['sometimes', 'image','nullable'],
             'product' => 'required',
             'name' => ['required', $isUpdate ? Rule::unique('products')->ignore($this->id) : 'unique:products'],
             'description' => ['nullable'],

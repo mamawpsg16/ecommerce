@@ -1,10 +1,10 @@
 <template>
     <loading v-model:active="isLoading" :is-full-page="fullPage" color="#3176FF" :height="150" :weight="150" loader="bars" />
-
     <div class="row">
         <div class="col-10 mx-auto my-2">
             <div class="card-body">
                 <dataset v-slot="{ ds }" :ds-data="items" :ds-sortby="sortBy(columns)">
+                    <dataset-show style="display: none;" :ds-show-entries="12"/>
                     <dataset-item class="row mb-3">
                         <template #default="{ row, rowIndex }">
                             <div class="col-sm-6 col-md-3 mb-4">
@@ -17,8 +17,7 @@
                                             </div>
                                             <h3 class="card-title text-truncate mb-3" :title="`Index: ${rowIndex}`">
                                                 {{ row.name }}
-                                                <p class="card-text fs-6 text-center mt-1">{{ row.description ?? 'N/A' }}
-                                                </p>
+                                                <p class="card-text fs-6 text-center mt-1">{{ row.description == '' ?  'N/A' : row.description }}</p>
                                             </h3>
                                             <p class="card-text text-start fs-4" style="color:#F57224">₱{{ row.price }} </p>
                                             <p class="card-text text-end">{{ row.updated_at }}</p>
@@ -45,7 +44,7 @@
 
 <script>
 import Loading from 'vue-loading-overlay';
-import { formatDate } from '@/helpers/Formatter/index.js';
+import { formatDate } from '@/helpers/Formatter/Date.js';
 import { Dataset, DatasetItem, DatasetInfo, DatasetPager, DatasetSearch, DatasetShow } from 'vue-dataset'
 import { sortBy, onColumnSort } from '@/helpers/Dataset/sort.js';
 import { useProductStore } from '@/stores/search.js';
@@ -83,7 +82,7 @@ export default {
         DatasetSearch,
         DatasetShow,
         Loading,
-        Dataset
+        Dataset,
     },
 
     created() {
@@ -127,8 +126,6 @@ export default {
             })
         },
     },
-
-  
 
     watch: {
         'product.items'(items) {

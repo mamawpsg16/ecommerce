@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\App;
 
+use App\Models\User;
+use App\Models\CartItem;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -58,4 +60,11 @@ class AuthenticationController extends Controller
 
         return response()->json(['status' => 200]);
     }
+
+    public function getPartials(Request $request){
+        $user_id = $request->user()->id;
+        $cart_items_count = CartItem::where('user_id', $user_id)->count();
+        return response(['cart_items_count' => $cart_items_count]);
+    }
+    
 }

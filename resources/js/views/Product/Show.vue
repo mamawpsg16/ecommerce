@@ -106,7 +106,7 @@ import { swalConfirmation, SwalDefault } from '@/helpers/Notification/sweetAlert
         },
         emits: ['updateProduct'],
         setup () {
-            return { v$: useVuelidate({ $autoDirty: true ,product: {} }) }
+            return { v$: useVuelidate({ $autoDirty: true }) }
         },
         data(){
             return{

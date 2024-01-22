@@ -81,7 +81,8 @@
 
 <script>
 import { swalConfirmation, swalSuccess, swalError, SwalDefault } from '@/helpers/Notification/sweetAlert.js';
-import { formatDate } from '@/helpers/Formatter/index.js';
+import { formatDate } from '@/helpers/Formatter/Date.js';
+import { useCartStore } from '@/stores/cart.js';
 export default {
     data() {
         return {
@@ -92,6 +93,7 @@ export default {
             },
             isLoading: false,
             auth_token: `Bearer ${localStorage.getItem('auth-token')}`,
+            cart: useCartStore(),
         }
         
     },
@@ -130,13 +132,15 @@ export default {
                     Authorization: this.auth_token
                 }
             }).then((response) => {
-                const { message, data } = response.data;
+                const { message, data, cart_items_count } = response.data;
 
                 this.details = data;
                 this.order = {
                     quantity: 1,
                     size: 0,
                 },
+
+                this.cart.setCount(cart_items_count);
                 SwalDefault.fire({
                     icon: "success",
                     text: message,

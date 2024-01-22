@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\App\AuthenticationController;
@@ -21,6 +22,8 @@ use App\Http\Controllers\App\AuthenticationController;
 Route::middleware('auth:sanctum')->group(function(){
     Route::get('/user', [AuthenticationController::class, 'tokenVerification'])->middleware('user.authenticated');
     Route::post('/logout',[AuthenticationController::class,'logout']); 
+    
+    Route::get('/get-partials',[AuthenticationController::class,'getPartials']); 
 
     Route::apiResources([
         'shops' => ShopController::class,
@@ -37,5 +40,8 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('product-details/{product:slug}', [ProductController::class, 'productDetails']);
     Route::post('product-add-to-cart', [ProductController::class, 'addToCart']);
     Route::get('search-product-existence', [ProductController::class, 'searchProductExistence']);
+
+    Route::get('cart-items', [UserController::class, 'cartItems']);
+    Route::delete('cart-item/{cart_item}', [UserController::class, 'deleteCartItem']);
 
 });

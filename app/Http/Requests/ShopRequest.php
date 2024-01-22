@@ -26,7 +26,7 @@ class ShopRequest extends FormRequest
         
         return [
             'id' => ['sometimes', 'integer'],
-            'image' => ['sometimes', 'image','nullable','mimes:jpeg,jpg,png'],
+            'image' => ['sometimes', 'image','nullable'],
             'name' => ['required', $isUpdate ? Rule::unique('shops')->ignore($this->id) : 'unique:shops'],
             'description' => ['nullable'],
             'shop' => 'required',

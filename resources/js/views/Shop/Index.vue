@@ -51,7 +51,7 @@
 import Create from './Create.vue';
 import Show from './Show.vue';
 import Modal from '@/components/Modal/modal.vue';
-import { formatDate } from '@/helpers/Formatter/index.js';
+import { formatDate } from '@/helpers/Formatter/Date.js';
 import {SwalDefault, swalConfirmation } from '@/helpers/Notification/sweetAlert.js';
 import axios from 'axios';
 import Dataset from '@/components/Dataset/Index.vue';
