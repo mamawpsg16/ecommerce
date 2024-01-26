@@ -102,6 +102,16 @@ const routes = [
         name: "users",
         component: () => import("@/views/Admin/User/Index.vue")
     },
+    {
+        path: "/wheel-of-fortune",
+        name: "wheel-of-fortune",
+        component: () => import("@/views/Test/WheelOfFortune.vue")
+    },
+    {
+        path: "/canvas",
+        name: "canvas",
+        component: () => import("@/views/Test/Canvas.vue")
+    },
    
 
     
