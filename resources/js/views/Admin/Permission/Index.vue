@@ -1,6 +1,6 @@
 <template>
-    <Create @loadUpdatedShops="getShops"/>
-    <Show @updateShop="updateShopByIndex" :shop_id="shop_id" :shop_details="shop_details" :index="index"/>
+    <Create @loadUpdatedPermissions="getPermissions"/>
+    <Show @updatePermission="updatePermissionByIndex" :permission_id="permission_id" :permission_details="permission_details" :index="index"/>
     <loading v-model:active="isLoading" :is-full-page="fullPage" color="#3176FF" :height="150" :weight="150" loader="dots"/>
     <div class="row">
         <div class="col-10 mx-auto my-2">
@@ -14,34 +14,34 @@
                     </div> -->
                 </div>
                 <div id="import" class="d-flex">
-                    <template v-if="data.length">
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Export
-                            </button>
-                            <ul class="dropdown-menu">
-                                <button class="dropdown-item" type="button" @click="handleExport('csv')">CSV</button>
-                                <button class="dropdown-item" type="button" @click="handleExport('xlsx')">EXCEL</button>
-                            </ul>
-                        </div>
-                    </template>
-                    <button type="button" class="btn btn-primary text-end ms-3" data-bs-toggle="modal" data-bs-target="#create-shop-modal">
-                        <i class="fa-solid fa-plus"></i>
-                    </button>
+                        <template v-if="data.length">
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Export
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <button class="dropdown-item" type="button" @click="handleExport('csv')">CSV</button>
+                                    <button class="dropdown-item" type="button" @click="handleExport('xlsx')">EXCEL</button>
+                                </ul>
+                            </div>
+                        </template>
+                        <button type="button" class="btn btn-primary text-end ms-3" data-bs-toggle="modal" data-bs-target="#create-permission-modal">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
                 </div>
            </div>
             <Dataset :data="data" :columns="columns">
                 <template #body="{ data, index }">
                     <tr>
                         <td>{{ data.name }}</td>
-                        <td>{{ data.description }}</td>
                         <td>{{ data.status }}</td>
                         <td>{{ data.created_at }}</td>
+                        <td>{{ data.created_by }}</td>
                         <td>{{ data.updated_at }}</td>
+                        <td>{{ data.updated_by }}</td>
                         <td class="text-center">
-                            <router-link :to="`/shop/${data.slug}`" target="_blank" type="button" class="btn btn-sm btn-success me-2"><i class="fa-solid fa-store"></i></router-link> 
-                            <button class="btn btn-sm btn-primary me-2" @click="viewShopDetails(data.id, index)"><i class="fa-solid fa-eye"></i></button>
-                            <button class="btn btn-sm btn-danger" @click="deleteConfirmation(data.id, index)"><i class="fa-solid fa-trash"></i></button>
+                            <button class="btn btn-sm btn-primary me-2" @click="viewPermissionDetails(data.id, index)"><i class="fa-solid fa-eye"></i></button>
+                            <!-- <button class="btn btn-sm btn-danger" @click="deleteConfirmation(data.id, index)"><i class="fa-solid fa-trash"></i></button> -->
                         </td>
                     </tr>
                 </template>
@@ -54,16 +54,15 @@
 import Create from './Create.vue';
 import Show from './Show.vue';
 import Modal from '@/components/Modal/modal.vue';
-import { formatDate } from '@/helpers/Formatter/Date.js';
+import { formatDate, titleCase } from '@/helpers/Formatter/Date.js';
 import {SwalDefault, swalConfirmation } from '@/helpers/Notification/sweetAlert.js';
 import axios from 'axios';
 import Dataset from '@/components/Dataset/Index.vue';
 import Loading from 'vue-loading-overlay';
 import { get } from '@/helpers/Export/index.js';
-
     export default {
-        name:'Shop Index',
-        emits:['loadUpdatedShops','updateShop'],
+        name:'Permission Index',
+        emits:['loadUpdatedPermissions','updatePermission'],
         data(){
             return{
                 isExportAll:false,
@@ -72,11 +71,6 @@ import { get } from '@/helpers/Export/index.js';
                     {
                         name:'Name',
                         field:'name',
-                        sort:''
-                    },
-                    {
-                        name:'Description',
-                        field:'description',
                         sort:''
                     },
                     {
@@ -90,8 +84,18 @@ import { get } from '@/helpers/Export/index.js';
                         sort:''
                     },
                     {
+                        name:'Created By',
+                        field:'created_by',
+                        sort:''
+                    },
+                    {
                         name:'Updated At',
                         field:'updated_at',
+                        sort:''
+                    },
+                    {
+                        name:'Updated By',
+                        field:'updated_by',
                         sort:''
                     },
                     {
@@ -100,8 +104,8 @@ import { get } from '@/helpers/Export/index.js';
                         sort:''
                     }
                 ],
-                shop_details:null,
-                shop_id:null,
+                permission_details:null,
+                permission_id:null,
                 auth_token: `Bearer ${localStorage.getItem('auth-token')}`,
                 isLoading: false,
                 fullPage: false,
@@ -116,54 +120,50 @@ import { get } from '@/helpers/Export/index.js';
             Loading
         },
         async created(){
-            await this.getShops();  
+            await this.getPermissions();  
         },
         methods:{
-            async getShops(){
-                await axios.get('/api/shops', { 
+            async getPermissions(){
+                await axios.get('/api/admin/permissions', { 
                     headers: {
                         Authorization: this.auth_token
                     }
                 })
                 .then((response) => {
-                    const { shops } = response.data;
+                    const { permissions } = response.data;
 
-                    const shop_details = shops.map(shop => {
+                    const permission_details = permissions.map(permission => {
                         return {
-                            ...shop,
-                            status:shop.active ? 'Active' : 'Inactive',
-                            created_at: formatDate(undefined, shop.created_at),
-                            updated_at: formatDate(undefined, shop.updated_at),
+                            ...permission,
+                            created_at: formatDate(undefined, permission.created_at),
+                            updated_at: formatDate(undefined, permission.updated_at),
+                            status: permission.active ? 'Active' : 'Inactive'
                         }
                     })
 
-                    this.data = shop_details;
+                    this.data = permission_details;
                 }).catch((error) =>{
                     console.log(error,'ERROR');
                 });
             },
 
-            async viewShopDetails(shop_id, index){
-                const id = document.getElementById('shop-details-modal');
+            async viewPermissionDetails(permission_id, index){
+                const id = document.getElementById('permission-details-modal');
                 const modal = bootstrap.Modal.getOrCreateInstance(id);
-
                 this.isLoading = true;
-                this.index = index;
-
-                await axios.get(`/api/shops/${shop_id}`, {
+                await axios.get(`/api/admin/permissions/${permission_id}`, {
                     headers:{
                         Authorization: this.auth_token
                     }
                 }).then((response) => {
-                    const { data } = response.data;
-                    this.shop_id = data.id;
+                    const { data} = response.data;
+                    this.permission_id = data.id;
+                    this.index = index;
                     
-                    data.status = data.active ? 'Active' : 'Inactive';
-
                     delete data.created_at;
                     delete data.updated_at;
 
-                    this.shop_details = data;
+                    this.permission_details = data;
 
                 }).catch((error) => {
                     console.log(error)
@@ -173,24 +173,24 @@ import { get } from '@/helpers/Export/index.js';
                
             },
 
-            updateShopByIndex(index, data){
+            updatePermissionByIndex(index, data){
                 this.data[index] = {
                             ...data,
-                            status: data.active ? 'Active' : 'Inactive',
                             created_at: formatDate(undefined, data.created_at),
                             updated_at: formatDate(undefined, data.updated_at),
+                            status: data.active ? 'Active' : 'Inactive'
                         }
             },
 
-            delete(shop_id, index){
+            delete(permission_id, index){
                 SwalDefault.fire({
                         title: '<i class="fa fa-cog fa-spin"></i>&nbsp;Deleting...',
-                        text: "Deleting shop, kindly wait.",
+                        text: "Deleting permission, kindly wait.",
                         showConfirmButton: false,
                         allowOutsideClick: false,
                         allowEscapeKey: false,
                 });
-                axios.delete(`/api/shops/${shop_id}`,{
+                axios.delete(`/api/admin/permissions/${permission_id}`,{
                     headers: {
                         Authorization: this.auth_token
                     }
@@ -212,16 +212,16 @@ import { get } from '@/helpers/Export/index.js';
                 });
             },
 
-            deleteConfirmation(shop_id, index){
+            deleteConfirmation(permission_id, index){
                 swalConfirmation().then((result) => {
                     if (result.isConfirmed) {
-                       this.delete(shop_id, index)
+                       this.delete(permission_id, index)
                     }
                 });
             },
 
             handleExport(type){
-                get(this.data, 'shop', type, this.columns);
+                get(this.data, 'permission', type, this.columns);
             }
         },
     }

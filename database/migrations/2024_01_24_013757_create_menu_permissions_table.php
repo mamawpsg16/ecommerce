@@ -11,16 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('menu_permissions', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->foreignId('menu_id');
+            $table->foreignId('permission_id');
             $table->boolean('active')->default(true);
-            $table->rememberToken();
             $table->timestamps();
-            $table->string('updated_by')->nullable();
+
+            $table->index('menu_id');
+            $table->index('permission_id');
         });
     }
 
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('menu_permissions');
     }
 };

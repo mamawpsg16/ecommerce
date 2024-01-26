@@ -2,12 +2,13 @@
     <loading v-model:active="isLoading" :is-full-page="fullPage" color="#3176FF" :height="150" :weight="150" loader="bars" />
     <div class="row">
         <div class="col-10 mx-auto my-2">
+            <Carousel/>
             <div class="card-body">
                 <dataset v-slot="{ ds }" :ds-data="items" :ds-sortby="sortBy(columns)">
                     <dataset-show style="display: none;" :ds-show-entries="12"/>
                     <dataset-item class="row mb-3">
                         <template #default="{ row, rowIndex }">
-                            <div class="col-sm-6 col-md-3 mb-4">
+                            <div class="col-sm-3 col-md-3 mb-2">
                                 <router-link type="button" class="btn btn-md" :to="`/product/${row.slug}`">
                                     <div class="card mb-2 p-3" style="height:100% !important;">
                                         <div class="card-body pt-3 pb-2 px-3">
@@ -17,7 +18,7 @@
                                             </div>
                                             <h3 class="card-title text-truncate mb-3" :title="`Index: ${rowIndex}`">
                                                 {{ row.name }}
-                                                <p class="card-text fs-6 text-center mt-1">{{ row.description == '' ?  'N/A' : row.description }}</p>
+                                                <p class="card-text fs-6 text-center mt-1">{{ row.description == null ?  'N/A' : row.description }}</p>
                                             </h3>
                                             <p class="card-text text-start fs-4" style="color:#F57224">₱{{ row.price }} </p>
                                             <p class="card-text text-end">{{ row.updated_at }}</p>
@@ -48,6 +49,7 @@ import { formatDate } from '@/helpers/Formatter/Date.js';
 import { Dataset, DatasetItem, DatasetInfo, DatasetPager, DatasetSearch, DatasetShow } from 'vue-dataset'
 import { sortBy, onColumnSort } from '@/helpers/Dataset/sort.js';
 import { useProductStore } from '@/stores/search.js';
+import Carousel from '@/components/Carousel/SlideVertical.vue'
 export default {
     name: 'Home',
 
@@ -83,6 +85,7 @@ export default {
         DatasetShow,
         Loading,
         Dataset,
+        Carousel
     },
 
     created() {
@@ -135,4 +138,5 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+</style>

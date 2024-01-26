@@ -147,7 +147,7 @@ export default {
                     showConfirmButton: false,
                     timer:1500,
                     toast:true,
-                    position: "top-end",
+                    position: "bottom-end",
                     animation:false
                 });
 
@@ -163,7 +163,7 @@ export default {
                     showConfirmButton: false,
                     timer:3000,
                     toast:true,
-                    position: "top-end",
+                    position: "bottom-end",
                     animation:false,
                     width:'auto',
                 });

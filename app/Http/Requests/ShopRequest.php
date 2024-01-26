@@ -30,6 +30,7 @@ class ShopRequest extends FormRequest
             'name' => ['required', $isUpdate ? Rule::unique('shops')->ignore($this->id) : 'unique:shops'],
             'description' => ['nullable'],
             'shop' => 'required',
+            'active' => ['sometimes'],
         ];
       
     }

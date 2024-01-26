@@ -23,7 +23,7 @@ class ProductController extends Controller
             ->Join('shops', 'products.shop_id', '=', 'shops.id')
             ->Join('category_product', 'products.id', '=', 'category_product.product_id')
             ->Join('categories', 'category_product.category_id', '=', 'categories.id')
-            ->where('products.active', 1)
+            // ->where('products.active', 1)
             ->groupBy('products.id') // Group by the product's primary key
             ->latest()
             ->get();
@@ -37,7 +37,7 @@ class ProductController extends Controller
     public function store(ProductRequest $request)
     {
         try {
-            DB::transaction(function () use ($request) {
+            return DB::transaction(function () use ($request) {
 
                 $data = $request->validated();
 

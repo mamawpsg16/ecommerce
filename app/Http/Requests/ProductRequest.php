@@ -28,12 +28,13 @@ class ProductRequest extends FormRequest
             'id' => ['sometimes', 'integer'],
             'image' => ['sometimes', 'image','nullable'],
             'product' => 'required',
-            'name' => ['required', $isUpdate ? Rule::unique('products')->ignore($this->id) : 'unique:products'],
+            'name' => ['required', $isUpdate ? Rule::unique('products')->ignore($this->id) : 'sometimes'],
             'description' => ['nullable'],
             'price' => 'required',
             'quantity' => 'required',
             'categories' => ['required', 'array'],
             'shop_id' => ['required'],
+            'active' => ['sometimes'],
         ];
       
     }

@@ -7,7 +7,7 @@
             <div class="col-12">
                 <div class="card p-1 mb-3">
                     <div class="d-flex align-items-center">
-                        <img :src="shop.shop_image" class="img-fluid rounded" style="height: 100px; width: 100px;" alt="Shop Image">
+                        <img :src="shop.shop_image" class="img-fluid rounded" style="height: 100px; width: 100px; object-fit: contain;" alt="Shop Image">
                         <div>
                             <p>{{ shop.name }}</p>
                             <p>{{ shop.description }}</p>

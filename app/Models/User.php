@@ -6,6 +6,7 @@ namespace App\Models;
 use App\Models\Shop;
 use App\Models\Order;
 use App\Models\CartItem;
+use App\Models\Admin\Role;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -24,6 +25,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'updated_by',
+        'updated_at',
+        'active',
     ];
 
     /**
@@ -46,6 +50,10 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    public function scopeActive($q){
+        return $q->where('active',1);
+    }
+
     public function shops(){
         return $this->hasMany(Shop::class);
     }
@@ -56,5 +64,10 @@ class User extends Authenticatable
 
     public function items(){
         return $this->hasMany(CartItem::class);
+    }
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class)->withTimestamps();
     }
 }

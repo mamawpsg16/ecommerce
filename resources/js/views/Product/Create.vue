@@ -17,24 +17,19 @@
                 <div class="row mt-5 mb-3">
                     <div class="col-6 ms-auto">
                         <label>Shop <span class="text-danger">*</span></label>
-                        <VueMultiselect :loading="loadingShops" :disabled="loadingShops" track-by="label" label="label"
-                            :class="{ inputInvalidClass: checkInputValidity('product', 'shop', ['required']) }"
-                            v-model="product.shop" placeholder="Select a shop" :options="shops"></VueMultiselect>
+                        <VueMultiselect :loading="loadingShops" :disabled="loadingShops" track-by="label" label="label" :class="{ inputInvalidClass: checkInputValidity('product', 'shop', ['required']) }" v-model="product.shop" placeholder="Select a shop" :options="shops"></VueMultiselect>
                         <div v-if="v$.product.shop.$dirty"
                             :class="{ 'text-danger': checkInputValidity('product', 'shop', ['required']) }">
                             <p v-if="v$.product.shop.required.$invalid">
                                 Shop is required.
                             </p>
-                        </div>
+                        </div>   
                     </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-6 ms-auto">
                         <label>Product Category <span class="text-danger">*</span></label>
-                        <VueMultiselect :loading="loadingCategories" :disabled="loadingCategories" :multiple="true"
-                            track-by="label" label="label"
-                            :class="{ inputInvalidClass: checkInputValidity('product', 'categories', ['required']) }"
-                            v-model="product.categories" placeholder="Select a category" :options="categories">
+                        <VueMultiselect :loading="loadingCategories" :disabled="loadingCategories" :multiple="true" track-by="label" label="label" :class="{ inputInvalidClass: checkInputValidity('product', 'categories', ['required']) }" v-model="product.categories" placeholder="Select a category" :options="categories">
                         </VueMultiselect>
                         <div v-if="v$.product.categories.$dirty"
                             :class="{ 'text-danger': checkInputValidity('product', 'categories', ['required']) }">
@@ -47,9 +42,7 @@
                 <div class="row mb-3">
                     <div class="col-4">
                         <label>Product Name <span class="text-danger">*</span></label>
-                        <Input type="text" v-model="product.name"
-                            :class="{ inputInvalidClass: checkInputValidity('product', 'name', ['required']) }" required
-                            autocomplete="product_name" />
+                        <Input type="text" v-model="product.name" :class="{ inputInvalidClass: checkInputValidity('product', 'name', ['required']) }" required autocomplete="product_name" />
                         <div v-if="v$.product.name.$dirty"
                             :class="{ 'text-danger': checkInputValidity('product', 'name', ['required']) }">
                             <p v-if="v$.product.name.required.$invalid">
@@ -60,11 +53,9 @@
 
                     <div class="col-4">
                         <label>Product Price <span class="text-danger">*</span></label>
-                        <Input type="number" step="0.01" v-model="product.price"
-                            :class="{ inputInvalidClass: checkInputValidity('product', 'price', ['required']) }" required
+                        <Input type="number" step="0.01" v-model="product.price" :class="{ inputInvalidClass: checkInputValidity('product', 'price', ['required']) }" required
                             autocomplete="price" />
-                        <div v-if="v$.product.price.$dirty"
-                            :class="{ 'text-danger': checkInputValidity('product', 'price', ['required']) }">
+                        <div v-if="v$.product.price.$dirty" :class="{ 'text-danger': checkInputValidity('product', 'price', ['required']) }">
                             <p v-if="v$.product.price.required.$invalid">
                                 Product Price is required.
                             </p>
@@ -73,11 +64,9 @@
 
                     <div class="col-4">
                         <label>Product Quantity<span class="text-danger">*</span></label>
-                        <Input type="number" step="0.01" v-model="product.quantity"
-                            :class="{ inputInvalidClass: checkInputValidity('product', 'quantity', ['required']) }" required
+                        <Input type="number" step="0.01" v-model="product.quantity" :class="{ inputInvalidClass: checkInputValidity('product', 'quantity', ['required']) }" required
                             autocomplete="quantity" />
-                        <div v-if="v$.product.quantity.$dirty"
-                            :class="{ 'text-danger': checkInputValidity('product', 'quantity', ['required']) }">
+                        <div v-if="v$.product.quantity.$dirty" :class="{ 'text-danger': checkInputValidity('product', 'quantity', ['required']) }">
                             <p v-if="v$.product.quantity.required.$invalid">
                                 Product Quantity is required.
                             </p>
@@ -92,7 +81,7 @@
                     </div>
                 </div>
                 <div class="text-end">
-                    <!-- <button type="button" class="btn btn-md btn-secondary me-1 px-3" @click="closeModal">Close</button> -->
+                    <button type="button" class="btn btn-md btn-secondary me-1 px-3" @click="resetForm" alt="reset"><i class="fa-solid fa-rotate-left"></i></button>
                     <button type="submit" class="btn btn-primary btn btn-md btn-primary me-1 px-5">Save</button>
                 </div>
             </form>
@@ -167,7 +156,7 @@ export default {
     methods: {
         async getCategories() {
             this.loadingCategories = true;
-            await axios.get('/api/get-categories', {
+            await axios.get('/api/admin/get-categories', {
                 headers: {
                     Authorization: this.auth_token
                 }
@@ -240,11 +229,7 @@ export default {
 
         },
 
-        async store() {
-            if (!await this.v$.$validate()) {
-                return;
-            }
-
+        async store() {        
             this.isSaving = true;
 
             const formData = new FormData();
@@ -280,6 +265,7 @@ export default {
             })
                 .then((response) => {
                     this.isSaving = false;
+                  
                     this.resetForm();
 
                     this.$emit('loadUpdatedProducts');
@@ -292,13 +278,16 @@ export default {
                 .catch((error) => {
                     this.isSaving = false;
                     if (error.response.status == 422) {
+                        this.errors =  error.response.data.errors;
                         SwalDefault.close();
-                        console.log(error.response.data, 'error.response.data');
                     }
                 });
         },
 
-        storeConfirmation() {
+        async storeConfirmation() {
+            if (!await this.v$.$validate()) {
+                return;
+            }
             swalConfirmation().then((result) => {
                 if (result.isConfirmed) {
                     this.store()

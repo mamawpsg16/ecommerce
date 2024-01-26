@@ -20,6 +20,9 @@
                                 Shop Name is required.
                             </p>
                         </div>
+                        <div v-if="errors?.name" class="text-danger">
+                            {{ errors?.name[0] }}
+                        </div>
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -29,7 +32,7 @@
                     </div>
                 </div>
                 <div class="text-end">
-                    <!-- <button type="button" class="btn btn-md btn-secondary me-1 px-3" @click="closeModal">Close</button> -->
+                    <button type="button" class="btn btn-md btn-secondary me-1 px-3" @click="resetForm" alt="reset"><i class="fa-solid fa-rotate-left"></i></button>
                     <button type="submit" class="btn btn-primary btn btn-md btn-primary me-1 px-5">Save</button>
                 </div>
             </form>
@@ -62,6 +65,9 @@ import { generateUniqueSlug } from '@/helpers/PartialHelpers/index.js';
                     name:null,
                     description:null,
                 },
+                errors:[{
+                    name:false,
+                }],
                 isSaving:false,
                 auth_token:`Bearer ${localStorage.getItem('auth-token')}`,
             }
@@ -117,10 +123,6 @@ import { generateUniqueSlug } from '@/helpers/PartialHelpers/index.js';
             },
 
             async store(){
-                if(!await this.v$.$validate()){
-                    return;
-                }
-
                 this.isSaving = true;
 
                 const formData = new FormData();
@@ -144,26 +146,35 @@ import { generateUniqueSlug } from '@/helpers/PartialHelpers/index.js';
                     }
                 })
                 .then((response) => {
+                    console.log(response,'response');
                     this.isSaving = false;
-                    this.resetForm();
-
-                    this.$emit('loadUpdatedShops');
-                    SwalDefault.fire({
-                        icon: "success",
-                        text: "Shop Successfully Saved.",
-                        showConfirmButton: false,
-                    });
+                    if(response.data.errors) {
+                        this.errors = response.data.errors;
+                        SwalDefault.close();
+                    }else{
+                        this.resetForm();
+    
+                        this.$emit('loadUpdatedShops');
+                        SwalDefault.fire({
+                            icon: "success",
+                            text: "Shop Successfully Saved.",
+                            showConfirmButton: false,
+                        });
+                    }
                 })
                 .catch((error) => {
                     this.isSaving = false;
                     if(error.response.status == 422){
+                        this.errors = error.response.data.errors;
                         SwalDefault.close();
-                        console.log(error.response.data,'error.response.data');
                     }
                 });
             },
 
-            storeConfirmation(){
+            async storeConfirmation() {
+                if (!await this.v$.$validate()) {
+                    return;
+                }
                 swalConfirmation().then((result) => {
                     if (result.isConfirmed) {
                        this.store()

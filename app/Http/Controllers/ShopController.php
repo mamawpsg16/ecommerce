@@ -20,7 +20,6 @@ class ShopController extends Controller
         $user_id = $request->user()->id;
 
         $shops = Shop::where('user_id', $user_id)
-            ->active()
             ->latest()
             ->get();
 
@@ -33,7 +32,7 @@ class ShopController extends Controller
     public function store(ShopRequest $request)
     {
         try {
-            DB::transaction(function () use ($request) {
+            return DB::transaction(function () use ($request) {
                 $user_id = $request->user()->id;
 
                 $data = $request->validated();

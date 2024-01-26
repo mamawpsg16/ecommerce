@@ -77,6 +77,31 @@ const routes = [
         name: "typescript",
         component: () => import("@/views/TsExample.vue")
     },
+    {
+        path: "/swiper",
+        name: "swiper",
+        component: () => import("@/components/Carousel/SlideVertical.vue")
+    },
+    {
+        path: "/roles",
+        name: "roles",
+        component: () => import("@/views/Admin/Role/Index.vue")
+    },
+    {
+        path: "/permissions",
+        name: "permissions",
+        component: () => import("@/views/Admin/Permission/Index.vue")
+    },
+    {
+        path: "/menus",
+        name: "menus",
+        component: () => import("@/views/Admin/Menu/Index.vue")
+    },
+    {
+        path: "/users",
+        name: "users",
+        component: () => import("@/views/Admin/User/Index.vue")
+    },
    
 
     

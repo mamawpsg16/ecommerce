@@ -1,13 +1,13 @@
 <template>
-    <div class="row mt-3">
+    <div class="row bg-secondary-subtle z-2 mb-3 py-2" style="position: sticky; top: 0;">
         <div class="col-12 my-2">
-            <div class="d-flex justify-content-between align-items-center">
-                <router-link class="ms-5 me-5 text-dark" :to="{ name: 'home' }">
+            <div class="d-flex justify-content-between align-items-center" style="position: relative;">
+                <router-link class="ms-5 text-dark" :to="{ name: 'home' }">
                     <i class="fa-solid fa-house fs-5  icon-option" alt="home"></i>
                 </router-link>
-                <VueMultiselect v-model="search" @select="onSelectProduct" @input="debouncedCheckProductExistence($event)" :loading="isLoading" :preserveSearch="true" :closeOnSelect="false" placeholder="Search..." :options="options" style="width:80%;" class="me-4"  label="label" track-by="label"></VueMultiselect>
-                <div class="d-flex align-items-center">
-                    <router-link type="button" to="/cart" class="ms-4 text-dark position-relative">
+                <VueMultiselect v-model="search" @select="onSelectProduct" @remove="onRemoveProduct" @input="debouncedCheckProductExistence($event)" :loading="isLoading" :preserveSearch="true" :closeOnSelect="false" placeholder="Search..." :options="options" style="width:80%;" class="ms-3"  label="label" track-by="label"></VueMultiselect>
+                <div class="d-flex align-items-center z-3 position-relative">
+                    <router-link type="button" to="/cart" class="text-dark position-relative">
                         <i class="fa-solid fa-cart-shopping me-2 icon-option"></i>
                         <template v-if="cart.count">
                             <span class="badge bg-danger rounded-pill position-absolute top-0 start-100 translate-middle">
@@ -16,14 +16,19 @@
                         </template>
                     </router-link>
 
-                    <div class="dropdown  me-5">
+
+                    <div class="dropdown z-3" id="menu-wrapper">
                         <router-link data-bs-toggle="dropdown" aria-expanded="false" type="button" class="ms-4 me-5 text-dark" to="#">
                             <i class="fa-solid fa-gear icon-option"></i>
                         </router-link>
-                        <ul class="dropdown-menu">
+                        <ul class="dropdown-menu" id="menu-picker">
+                            <router-link class="dropdown-item" :to="{ name: 'users' }">Users</router-link>
                             <router-link class="dropdown-item" :to="{ name: 'registration-index' }">Registration</router-link>
-                            <router-link class="dropdown-item" :to="{ name: 'shop-index' }">Shop</router-link>
-                            <router-link class="dropdown-item" :to="{ name: 'product-index' }">Product</router-link>
+                            <router-link class="dropdown-item" :to="{ name: 'shop-index' }">Shops</router-link>
+                            <router-link class="dropdown-item" :to="{ name: 'product-index' }">Products</router-link>
+                            <router-link class="dropdown-item" :to="{ name: 'roles' }">Roles</router-link>
+                            <router-link class="dropdown-item" :to="{ name: 'permissions' }">Permissions</router-link>
+                            <router-link class="dropdown-item" :to="{ name: 'menus' }">Menus</router-link>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -33,7 +38,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </template>
 
@@ -123,6 +127,10 @@ export default {
             await this.checkProducts(this.search.label, true);
         },
 
+        onRemoveProduct(){
+            this.checkProducts([], true);
+        },
+
         logoutConfirmation() {
             swalConfirmation({
                 title: "Are you sure?",
@@ -155,4 +163,16 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+#menu-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+#menu-picker {
+  position: absolute;
+  z-index: 1000;
+  top: 100%;
+  left: 0;
+}
+</style>

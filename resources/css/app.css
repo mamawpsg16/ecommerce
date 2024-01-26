@@ -8,6 +8,8 @@
 @import "nprogress/nprogress.css";
 @import 'vue-loading-overlay/dist/css/index.css';
 
+
+
 body {
     font-family: 'Roboto', sans-serif !important;
     overflow-x: hidden;
@@ -28,4 +30,28 @@ html {
 
 .icon-option{
   font-size:25px !important;
+}
+
+
+.swiper {
+  width: 100%;
+  height: 100%;
+}
+
+.swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  background: #fff;
+
+  /* Center slide text vertically */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }

@@ -13,16 +13,19 @@
                         </select>
                     </div> -->
                 </div>
-                <div id="import">
+                <div id="import"  class="d-flex">
                     <template v-if="data.length">
-                        <button type="button" class="btn btn-secondary text-end me-2" @click="exportCsvStudents">CSV
-                            <i class="fa-solid fa-file-export"></i>
-                        </button>
-                        <button type="button" class="btn btn-secondary text-end me-2" @click="exportExcelStudents">EXCEL
-                            <i class="fa-solid fa-file-export"></i>
-                        </button>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Export
+                            </button>
+                            <ul class="dropdown-menu">
+                                <button class="dropdown-item" type="button" @click="handleExport('csv')">CSV</button>
+                                <button class="dropdown-item" type="button" @click="handleExport('xlsx')">EXCEL</button>
+                            </ul>
+                        </div>
                     </template>
-                    <button type="button" class="btn btn-primary text-end me-2" data-bs-toggle="modal" data-bs-target="#create-product-modal">
+                    <button type="button" class="btn btn-primary text-end ms-3" data-bs-toggle="modal" data-bs-target="#create-product-modal">
                         <i class="fa-solid fa-plus"></i>
                     </button>
                 </div>
@@ -59,7 +62,7 @@ import {SwalDefault, swalConfirmation } from '@/helpers/Notification/sweetAlert.
 import axios from 'axios';
 import Dataset from '@/components/Dataset/Index.vue';
 import Loading from 'vue-loading-overlay';
-import * as XLSX from 'xlsx';
+import { get } from '@/helpers/Export/index.js';
 
     export default {
         name:'Product Index',
@@ -116,7 +119,7 @@ import * as XLSX from 'xlsx';
                     },
                     {
                         name:'Action',
-                        field:'',
+                        field:'action',
                         sort:''
                     }
                 ],
@@ -244,104 +247,8 @@ import * as XLSX from 'xlsx';
                 });
             },
 
-            exportExcelStudents(){
-                const columns = [...this.columns
-                .map(column => {
-                    if (column.name !== 'Action') {
-                        return {
-                            name:column.name,
-                            field:column.field,
-                        };
-                    }
-                    return null; // Return null for fields you want to exclude
-                })
-                .filter(field => field !== null)]; // Filter out null values
-
-                const data = this.data.map(item => {
-                    return columns.reduce((obj, column) => {
-                            obj[column.field] = item[column.field];
-                            return obj;  // Return the accumulated object in each iteration
-                    }, {});
-                });
-
-                  /* generate worksheet and workbook */
-                const worksheet = XLSX.utils.json_to_sheet(data);
-                const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, "Students");
-
-                /* fix headers */
-                XLSX.utils.sheet_add_aoa(worksheet, [[...columns.map(column => column.name)]], { origin: "A1" });
-
-                /* calculate column width */
-                const column_widths = columns.map(column => {
-                    return {
-                        wch:20
-                    }
-                })
-
-                worksheet["!cols"] = column_widths;
-
-                // var wscols = [
-                //     {wch: 6}, // "characters"
-                //     {wpx: 50}, // "pixels"
-                //     ,
-                //     {hidden: true} // hide column
-                // ];
-
-                // /* At 96 PPI, 1 pt = 1 px */
-                // var wsrows = [
-                //     {hpt: 12}, // "points"
-                //     {hpx: 16}, // "pixels"
-                //     ,
-                //     {hpx: 24, level:3},
-                //     {hidden: true}, // hide row
-                //     {hidden: false}
-                // ];
-                // worksheet["!rows"] = rows;
-
-                /* create an XLSX file and try to save to Presidents.xlsx */
-                XLSX.writeFile(workbook, "Student.xlsx", { compression: true });
-            },
-
-            exportCsvStudents(){
-                const columns = [...this.columns
-                .map(column => {
-                    if (column.name !== 'Action') {
-                        return {
-                            name:column.name,
-                            field:column.field,
-                        };
-                    }
-                    return null; // Return null for fields you want to exclude
-                })
-                .filter(field => field !== null)]; // Filter out null values
-
-                const data = this.data.map(item => {
-                    return columns.reduce((obj, column) => {
-                            obj[column.field] = item[column.field];
-                            return obj;  // Return the accumulated object in each iteration
-                    }, {});
-                });
-
-                  /* generate worksheet and workbook */
-                const worksheet = XLSX.utils.json_to_sheet(data);
-                const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, "Students");
-
-                /* fix headers */
-                XLSX.utils.sheet_add_aoa(worksheet, [[...columns.map(column => column.name)]], { origin: "A1" });
-
-                /* calculate column width */
-                const column_widths = columns.map(column => {
-                    return {
-                        wch:20
-                    }
-                })
-
-                worksheet["!cols"] = column_widths;
-
-                /* create an XLSX file and try to save to Presidents.xlsx */
-                XLSX.writeFile(workbook, "Student.csv", { compression: true });
+            handleExport(type){
+                get(this.data, 'product', type, this.columns);
             }
         },
     }

@@ -54,7 +54,7 @@ class UserController extends Controller
         $items = CartItem::with(['product' => function($q){
             $q->select('id','name', 'slug', 'image', 'description', 'price', 'quantity', 'shop_id');
         }, 'product.shop' => function($q){
-            $q->select('id','name', 'slug',);
+            $q->select('id','name', 'slug', 'image');
         }])->where('user_id', $user_id)->get();
 
         return response(['items' => $items]);

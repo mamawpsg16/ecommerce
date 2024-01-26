@@ -31,7 +31,7 @@ class HomeController extends Controller
     public function store(ShopRequest $request)
     {
         try {
-            DB::transaction(function () use ($request) {
+            return DB::transaction(function () use ($request) {
                 $user_id = $request->user()->id;
 
                 $data = $request->validated();

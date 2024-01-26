@@ -1,48 +1,65 @@
 <template>
-    <Modal class="modal-lg" targetModal="shop-details-modal" modaltitle="Shop Details" :backdrop="true" :escKey="false">
+    <Modal class="modal-lg" targetModal="menu-details-modal" modaltitle="Menu Details" :backdrop="true" :escKey="false">
         <template #body>
-            <form @submit.prevent="updateConfirmation" class="m-3" id="shop-details-form">
-                <div class="row mb-3">
-                    <div class="d-flex flex-column align-items-center text-end">
-                        <img :src="image ?? defaultShopImage" class="img-fluid mb-4 rounded" style="height: 250px; width: 250px; border: 2px solid #ccc;" alt="Default Profile Image">
-                        <div class="d-flex justify-content-center align-items-center" v-if="image && edit">
-                            <input class="form-control object-fit-cover " type="file" id="formFile" style="width: 250px;" @change="uploadImage" accept="image/*">
-                            <button  type="button" class="ms-2 btn btn-sm btn-danger" @click="removeImage"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    </div>
-                </div>
+            <form @submit.prevent="updateConfirmation" class="mt-1" id="menu-details-form">
                 <div class="row mb-3">
                     <div class="col-6">
-                        <label>Shop Name <span class="text-danger" v-if="edit">*</span></label>
-                        <Input type="text"  class="form-control" v-model="shop.name" :disabled="!edit" :class="{ inputInvalidClass : checkInputValidity('shop','name',['required']) }" required   autocomplete="shop_name" />
-                        <div  v-if="v$.shop.name.$dirty" :class="{ 'text-danger': checkInputValidity('shop','name',['required']) }">
-                            <p v-if="v$.shop.name.required.$invalid">
-                                Shop Name is required.
+                        <label>Name <span class="text-danger" v-if="edit">*</span></label>
+                        <Input type="text" v-model="menu.name" :disabled="!edit" :class="{ inputInvalidClass: checkInputValidity('menu', 'name', ['required']) }" required autocomplete="menu_name"  />
+                        <div v-if="v$.menu.name.$dirty" :class="{ 'text-danger': checkInputValidity('menu', 'name', ['required']) }">
+                            <p v-if="v$.menu.name.required.$invalid">
+                                Name is required.
                             </p>
                         </div>
                         <div v-if="errors?.name" class="text-danger">
                             {{ errors?.name[0] }}
                         </div>
                     </div>
+                    <div class="col-6">
+                        <label>Url <span class="text-danger" v-if="edit">*</span></label>
+                        <Input type="text" v-model="menu.url" :disabled="!edit" :class="{ inputInvalidClass: checkInputValidity('menu', 'url', ['required']) }" required autocomplete="menu_url"  />
+                        <div v-if="v$.menu.url.$dirty"
+                            :class="{ 'text-danger': checkInputValidity('menu', 'url', ['required']) }">
+                            <p v-if="v$.menu.url.required.$invalid">
+                                Url is required.
+                            </p>
+                        </div>
+                        <div v-if="errors?.url" class="text-danger">
+                            {{ errors?.url[0] }}
+                        </div>
+                    </div>
                 </div>
-
                 <div class="row mb-3">
-                    <div class="col-12">
-                        <label>Shop Description</label>
-                        <textarea class="form-control" rows="5" v-model="shop.description" :disabled="!edit"/>
+                    <div class="col-6">
+                        <label>Font Awesome Icon</label>
+                        <Input type="text" v-model="menu.icon" autocomplete="icon" :disabled="!edit" />
+                    </div>
+                    <div class="col-6">
+                        <label>Order <span class="text-danger" v-if="edit">*</span></label>
+                        <Input type="number" v-model="menu.order" :disabled="!edit"  onkeydown="return event.keyCode !== 69" onpaste="return false;" :class="{ inputInvalidClass: checkInputValidity('menu', 'order', ['required']) }" required autocomplete="menu_order"  />
+                        <div v-if="v$.menu.order.$dirty"
+                            :class="{ 'text-danger': checkInputValidity('menu', 'order', ['required']) }">
+                            <p v-if="v$.menu.order.required.$invalid">
+                                Order is required.
+                            </p>
+                        </div>
+                        <div v-if="errors?.order" class="text-danger">
+                            {{ errors?.order[0] }}
+                        </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6">
                         <label>Status</label>
                         <div class="form-check form-switch d-flex align-items-center" style="margin:0">
-                            <input class="form-check-input" type="checkbox" :disabled="!edit" value="" id="example-switch-default1" name="example-switch-default1" :checked="shop.active" @change="handleStatusToggle"/>
+                            <input class="form-check-input" type="checkbox" :disabled="!edit" value="" id="example-switch-default1" name="example-switch-default1" :checked="menu.active" @change="handleStatusToggle"/>
                             <label class="form-check-label" for="example-switch-default1">
-                                <span :class="`btn btn-sm ms-2 px-4 btn-${ shop.active ? 'success': 'danger'} btn-xs rounded-pill`">{{ shop.active ? "Active" : "Inactive" }}</span>
+                                <span :class="`btn btn-sm ms-2 px-4 btn-${ menu.active ? 'success': 'danger'} btn-xs rounded-pill`">{{ menu.active ? "Active" : "Inactive" }}</span>
                             </label>
                         </div>
                     </div>
                 </div>
+
                 <div class="text-end">
                     <button type="button" v-if="!edit" class="btn btn-md btn-secondary me-1 px-3" @click="closeModal">Close</button>
                     <button type="button"  v-if="!edit" class="btn btn-md btn-primary me-1 px-3" @click="editDetails"><i class="fa-solid fa-pencil"></i></button>
@@ -59,62 +76,56 @@
 <script>
 import Modal from '@/components/Modal/modal.vue';
 import Input from '@/components/Form/Input.vue'
-import VueMultiselect from 'vue-multiselect'
-import VueDatePicker from '@vuepic/vue-datepicker';
 import { useVuelidate } from '@vuelidate/core'
 import { required } from '@vuelidate/validators';
 import { deepClone } from '@/helpers/PartialHelpers/index.js';
-import defaultShop from '@/../../public/storage/default_images/shop.png';
-
 import { checkValidity } from '@/helpers/Vuelidate/InputValidation.js';
 import { swalConfirmation, SwalDefault } from '@/helpers/Notification/sweetAlert.js';
     export default {
-        name:'Shop Details',
+        name:'Menu Details',
         props:{
-            shop_details: [Object, Array],
-            shop_id: [Number],
+            menu_details: [Object, Array],
+            menu_id: [Number],
             index: [Number]
         },
-        emits: ['updateShop'],
+        emits: ['updateMenu'],
         setup () {
             return { v$: useVuelidate({ $autoDirty: true }) }
         },
         data(){
             return{
-                defaultShopImage: defaultShop,
-                image:null,
-                file:null,
-                shop:{
-                    name:null,
-                    description:null,
+                menu: {
+                    name: null,
+                    url: null,
+                    icon: null,
+                    order: null,
+                    active: null,
                 },
-                categories:[],
-                edit_categories:null,
-                loadingCategories:false,
-                auth_token:`Bearer ${localStorage.getItem('auth-token')}`,
+                isSaving: false,
+                auth_token: `Bearer ${localStorage.getItem('auth-token')}`,
                 edit:false,
                 isUpdating:false,
-                emailExists:false,
-                firstStepDisable:false,
                 prevDetails:null,
-                errors:[{
+                errors: [{
                     name:false,
+                    url:false,
+                    order:false,
                 }],
             }
         },
        
         validations () {
             return {
-                shop: {
+                menu: {
                     name: { required },
+                    url: { required },
+                    order: { required },
                 },
             }
         },
         components:{
             Modal,
             Input,
-            VueDatePicker,
-            VueMultiselect
         },
 
         async created(){
@@ -122,14 +133,13 @@ import { swalConfirmation, SwalDefault } from '@/helpers/Notification/sweetAlert
 
         methods:{
             resetForm() {
-                this.image   = null;
-                this.file    = null;
-                const form = document.querySelector('#shop-details-form');
+            
+                const form = document.querySelector('#menu-details-form');
                 if(form){
                     form.reset();
                 }
-                this.shop = deepClone(this.prevDetails);
-                this.image   = deepClone(this.prevDetails.shop_image);
+                
+                this.menu = deepClone(this.prevDetails);
                 this.errors = [];
                 this.v$.$reset();
             },
@@ -143,89 +153,45 @@ import { swalConfirmation, SwalDefault } from '@/helpers/Notification/sweetAlert
                 this.resetForm();
             },
 
-            uploadImage(e){
-                e.preventDefault()
-                const file = e.target.files[0];
-                this.file = file;
-                if (file) {
-                    // Use FileReader to read the file as a data URL
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                        this.image = reader.result; // Set the imageUrl to the data URL
-                    };
-                    reader.readAsDataURL(file);
-                }
-            },
-
-            removeImage(){
-                this.file = null;
-                this.image = this.defaultShopImage;
-            },
 
             checkInputValidity(parentProperty = null, dataProperty, validations = []) {
                return checkValidity(this.v$, parentProperty, dataProperty, validations);
             },
 
-            formatData(shop){
-                    
-                shop.status = shop.active ? 'Active' : 'Inactive';
-                this.shop = shop;
-                this.image   = shop.shop_image; 
-
-                return shop;
-            },
 
             closeModal(){
-                const id = document.getElementById('shop-details-modal');
+                const id = document.getElementById('menu-details-modal');
                 const modal = bootstrap.Modal.getOrCreateInstance(id);
                 this.resetForm();
                 modal.hide();
             },
 
+            handleStatusToggle() {
+                this.menu.active = !this.menu.active;
+            },
+
             async update(){
                 this.isUpdating = true;
 
-                const formData = new FormData();
-
-                if(this.file){
-                    formData.append('image',this.file);
-                }
-
-                const shop = {
-                    ...this.shop,
-                };
-
-                delete shop.shop_image;
-                delete shop.status;
-           
-
-                formData.append('id', this.shop_id);
-                formData.append('name', shop.name);
-                formData.append('description', shop.description);
-                formData.append('shop', JSON.stringify(shop));
-
-
-                axios.post(`/api/update-shop`,formData,{
+                axios.put(`/api/admin/menus/${this.menu_id}`, this.menu,{
                     headers:{
-                        'Content-Type': 'multipart/form-data',
                         Authorization: this.auth_token,
                     }
                 })
                 .then((response) => {
                     const { data } = response.data;
-
+                    console.log(response);
                     this.isUpdating = false;
+
                     if(response.data.errors) {
                         this.errors = response.data.errors;
                         SwalDefault.close();
                     }else{
                         this.edit = false;
     
-                        const formattedData = this.formatData(data);
-    
-                        this.prevDetails = deepClone(formattedData);
-    
-                        this.$emit('updateShop', this.index, formattedData);
+                        this.prevDetails = deepClone(data);
+                        
+                        this.$emit('updateMenu', this.index, data);
     
                         SwalDefault.fire({
                             icon: "success",
@@ -233,11 +199,12 @@ import { swalConfirmation, SwalDefault } from '@/helpers/Notification/sweetAlert
                             showConfirmButton: false,
                             timer: 1500
                         });
-                        this.resetForm();
-                        this.errors = []; 
+    
+                        this.resetForm();    
+                        this.errors = [];
                     }
-                    
-                  
+
+
                 })
                 .catch((error) => {
                     this.isUpdating = false;
@@ -259,22 +226,17 @@ import { swalConfirmation, SwalDefault } from '@/helpers/Notification/sweetAlert
                     }
                 });
             },
-
-            handleStatusToggle() {
-                this.shop.active = !this.shop.active;
-            },
         },
 
         mounted(){
         },
 
         watch:{
-            shop_details(){
+            menu_details(){
                 this.edit = false;
-                this.prevDetails = deepClone(this.shop_details);
+                this.prevDetails = deepClone(this.menu_details);
                 // this.resetForm();
-                this.shop = this.shop_details;
-                this.image  = this.shop_details.shop_image; 
+                this.menu = this.menu_details;
                 immediate:true
             },
 

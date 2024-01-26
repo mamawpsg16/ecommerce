@@ -2,11 +2,11 @@
     <template v-if="isUserAuthenticated">
         <Navbar/>
     </template>
-    
     <router-view></router-view>
 </template>
 
 <script>
+
 import defaultProduct from '@/../../public/storage/default_images/product.png';
 import {isAuthenticated as checkIsAuthenticated} from '@/helpers/Auth/isAuthenticated.js'; 
 import { useCartStore } from '@/stores/cart.js';
@@ -25,7 +25,7 @@ import Navbar from '@/components/Navbar/Header.vue';
             }
         },
         components:{
-            Navbar
+            Navbar,
         },
         watch: {
             async $route(to, from) {

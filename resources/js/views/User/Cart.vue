@@ -15,10 +15,10 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="col-12 d-flex">
+                            <div class="col-12 d-flex justify-content-center align-items-center">
                                 <div class="col-3">
                                     <div class="card-body">
-                                        <img :src="defaultImage" class="img-fluid mb-3" style="height: 100px; width: 100px;"
+                                        <img :src="item.product.product_image" class="img-fluid mb-3" style="height: 150px; width: 150px; object-fit: contain;"
                                             alt="Product Image">
                                     </div>
                                 </div>

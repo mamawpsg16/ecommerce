@@ -73,6 +73,17 @@
                         <textarea class="form-control" rows="5" v-model="product.description" :disabled="!edit"/>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Status</label>
+                        <div class="form-check form-switch d-flex align-items-center" style="margin:0">
+                            <input class="form-check-input" type="checkbox" :disabled="!edit" value="" id="example-switch-default1" name="example-switch-default1" :checked="product.active" @change="handleStatusToggle"/>
+                            <label class="form-check-label" for="example-switch-default1">
+                                <span :class="`btn btn-sm ms-2 px-4 btn-${ product.active ? 'success': 'danger'} btn-xs rounded-pill`">{{ product.active ? "Active" : "Inactive" }}</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
                 <div class="text-end">
                     <button type="button" v-if="!edit" class="btn btn-md btn-secondary me-1 px-3" @click="closeModal">Close</button>
                     <button type="button"  v-if="!edit" class="btn btn-md btn-primary me-1 px-3" @click="editDetails"><i class="fa-solid fa-pencil"></i></button>
@@ -160,7 +171,7 @@ import { swalConfirmation, SwalDefault } from '@/helpers/Notification/sweetAlert
         methods:{
             async getCategories(){
                 this.loadingCategories = true;
-                await axios.get('/api/get-categories', { 
+                await axios.get('/api/admin/get-categories', { 
                     headers: {
                         Authorization: this.auth_token
                     }
@@ -259,10 +270,6 @@ import { swalConfirmation, SwalDefault } from '@/helpers/Notification/sweetAlert
             },
 
             async update(){
-                if(!await this.v$.$validate()){
-                    return;
-                }
-
                 this.isUpdating = true;
 
                 const formData = new FormData();
@@ -332,12 +339,19 @@ import { swalConfirmation, SwalDefault } from '@/helpers/Notification/sweetAlert
             },
 
 
-            updateConfirmation(){
+            async updateConfirmation(){
+                if(!await this.v$.$validate()){
+                    return;
+                }
                 swalConfirmation().then((result) => {
                     if (result.isConfirmed) {
                        this.update()
                     }
                 });
+            },
+
+            handleStatusToggle() {
+                this.product.active = !this.product.active;
             },
         },
 
