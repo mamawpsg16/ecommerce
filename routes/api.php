@@ -3,14 +3,16 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\RoleController;
-use App\Http\Controllers\Admin\UserController as AdminController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Raffle\EventController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\App\AuthenticationController;
+use App\Http\Controllers\Admin\UserController as AdminController;
+use App\Http\Controllers\Raffle\ParticipantController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,5 +64,15 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('search-product-existence', [ProductController::class, 'searchProductExistence']);
     Route::get('cart-items', [UserController::class, 'cartItems']);
     Route::delete('cart-item/{cart_item}', [UserController::class, 'deleteCartItem']);
+
+    Route::group(['prefix' => 'raffle'], function(){
+        Route::get('get-events', [EventController::class, 'events']);
+    
+        Route::apiResources([
+            'participants' => ParticipantController::class,
+            // 'participants' => EventController::class,
+        ]);
+
+    });
 
 });
