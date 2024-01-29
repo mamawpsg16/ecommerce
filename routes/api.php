@@ -12,6 +12,7 @@ use App\Http\Controllers\Raffle\EventController;
 use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\App\AuthenticationController;
 use App\Http\Controllers\Admin\UserController as AdminController;
+use App\Http\Controllers\Raffle\ItemController;
 use App\Http\Controllers\Raffle\ParticipantController;
 
 /*
@@ -65,13 +66,18 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::get('cart-items', [UserController::class, 'cartItems']);
     Route::delete('cart-item/{cart_item}', [UserController::class, 'deleteCartItem']);
 
+
     Route::group(['prefix' => 'raffle'], function(){
         Route::get('get-events', [EventController::class, 'events']);
     
         Route::apiResources([
             'participants' => ParticipantController::class,
+            'items'    => ItemController::class,
             // 'participants' => EventController::class,
         ]);
+
+        Route::get('get-items', [ItemController::class, 'items']);
+
 
     });
 

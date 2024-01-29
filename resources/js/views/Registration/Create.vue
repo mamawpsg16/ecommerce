@@ -3,8 +3,8 @@
         <template #body>
             <form-wizard @on-complete="registerConfirmation" finishButtonText="Register" ref="formWizard" subtitle="Event Registration" :validateOnBack="true" color="#3176FF">
                 <tab-content title="Personal Information" icon="fa-solid fa-user" :beforeChange="validateParticipantDetails">
-                    <div class="row justify-content-end mb-3">
-                        <div class="col-md-6 col-lg-4">
+                    <div class="row justify-content-center mb-3">
+                        <div class="col-md-6">
                             <label class="mb-1">Event <span class="text-danger">*</span></label>
                             <VueMultiselect :loading="loadingEvents" :disabled="loadingEvents" :class="{ inputInvalidClass : checkInputValidity('participant','event',['required'])}" v-model="participant.event" track-by="label" label="label" placeholder="Event" :options="events"></VueMultiselect>
                             <div  v-if="v$.participant.event.$dirty" :class="{ 'text-danger': checkInputValidity('participant','event',['required'])}">
@@ -14,8 +14,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 col-lg-4">
+                    <div class="row  mb-2">
+                        <div class="col-md-6">
                             <label class="mb-1">Name <span class="text-danger">*</span></label>
                             <Input type="text" placeholder="First Name" v-model="participant.name"  :class="{ inputInvalidClass : checkInputValidity('participant','name',['required'])}" required   autocomplete="name" />
                             <div  v-if="v$.participant.name.$dirty" :class="{ 'text-danger': checkInputValidity('participant','name',['required'])}">
@@ -25,17 +25,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6 col-lg-4">
-                            <label class="mb-1">Date of Birth <span class="text-danger">*</span></label>
-                            <VueDatePicker :class="{ inputInvalidClass : checkInputValidity('participant','birth_date',['required'])}"  v-model="participant.birth_date" placeholder="Date of Birth" format="MM-dd-yyyy" required></VueDatePicker>
-                            <div  v-if="v$.participant.birth_date.$dirty" :class="{ 'text-danger':  checkInputValidity('participant','birth_date',['required']) }">
-                                <p v-if="v$.participant.birth_date.required.$invalid">
-                                    Date of Birth is required.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 col-lg-4  mb-3">
+                        <div class="col-md-6">
                             <label class="mb-1">Email Address <span class="text-danger">*</span></label>
                             <Input type="email" placeholder="Email Address" v-model="participant.email"  :class="{ inputInvalidClass : checkInputValidity('participant','email',['required','email']) }" required/>
                             <div v-if="v$.participant.email.$dirty" :class="{ 'text-danger': checkInputValidity('participant','email',['required','email']) }">
@@ -47,8 +37,20 @@
                                 </p>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="col-md-6 col-lg-4  mb-3">
+                    <div class="row  mb-2">
+                        <div class="col-md-6">
+                            <label class="mb-1">Date of Birth <span class="text-danger">*</span></label>
+                            <VueDatePicker :class="{ inputInvalidClass : checkInputValidity('participant','birth_date',['required'])}"  v-model="participant.birth_date" placeholder="Date of Birth" format="MM-dd-yyyy" required></VueDatePicker>
+                            <div  v-if="v$.participant.birth_date.$dirty" :class="{ 'text-danger':  checkInputValidity('participant','birth_date',['required']) }">
+                                <p v-if="v$.participant.birth_date.required.$invalid">
+                                    Date of Birth is required.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
                             <label class="mb-1">Phone # <span class="text-danger">*</span></label>
                             <Input type="number"  placeholder="Phone Number"   v-model="participant.personal_phone_number" :class="{ inputInvalidClass : checkInputValidity('participant','personal_phone_number',['required', 'minLength', 'maxLength'])}"  required autocomplete="name" />
                             <div  v-if="v$.participant.personal_phone_number.$dirty" :class="{ 'text-danger':  checkInputValidity('participant','personal_phone_number',['required', 'minLength', 'maxLength'])}">
@@ -63,7 +65,9 @@
                                 </p>
                             </div>
                         </div>
-
+                    </div>
+                    
+                    <div class="row">
                         <div class="col-12">
                             <label class="mb-1">Address <span class="text-danger">*</span></label>
                             <textarea class="form-control" v-model="participant.address" :class="{ inputInvalidClass : checkInputValidity('participant','address',['required'])}" placeholder="Address " rows="2" required></textarea>
@@ -77,8 +81,8 @@
                     
                 </tab-content>
                 <tab-content title="Company Information" icon="fa-solid fa-building" :beforeChange="validateCompanyDetails">
-                    <div class="row">
-                        <div class="col-md-6 col-lg-4">
+                    <div class="row mb-2">
+                        <div class="col-md-6">
                             <label class="mb-1">Industry <span class="text-danger">*</span></label>
                             <Input type="text" placeholder="Industry" v-model="company_details.industry"  :class="{ inputInvalidClass : checkInputValidity('company_details','industry',['required'])}" required   autocomplete="name" />
                             <div  v-if="v$.company_details.industry.$dirty" :class="{ 'text-danger': checkInputValidity('company_details','industry',['required'])}">
@@ -88,7 +92,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6 col-lg-4">
+                        <div class="col-md-6">
                             <label class="mb-1">Company <span class="text-danger">*</span></label>
                             <Input type="text" placeholder="Company" v-model="company_details.company" />
                             <div  v-if="v$.company_details.company.$dirty" :class="{ 'text-danger': checkInputValidity('company_details','company',['required'])}">
@@ -97,8 +101,9 @@
                                 </p>
                             </div>
                         </div>
-
-                        <div class="col-md-6 col-lg-4 mb-3">
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6">
                             <label class="mb-1">Position <span class="text-danger">*</span></label>
                             <Input type="text" placeholder="Position" v-model="company_details.position"  :class="{ inputInvalidClass : checkInputValidity('company_details','position',['required'])}" autocomplete="position" required/>
                             <div  v-if="v$.company_details.position.$dirty" :class="{ 'text-danger': checkInputValidity('company_details','position',['required'])}">
@@ -108,8 +113,8 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6 col-lg-4 mb-3">
-                            <label class="mb-1">Company Phone # <span class="text-danger">*</span></label>
+                        <div class="col-md-6">
+                            <label class="mb-1">Company Phone #</label>
                             <Input type="number"  placeholder="Phone Number"   v-model="company_details.company_phone_number" :class="{ inputInvalidClass : checkInputValidity('company_details','company_phone_number',['minLength', 'maxLength'])}"  required autocomplete="name" />
                             <div  v-if="v$.company_details.company_phone_number.$dirty" :class="{ 'text-danger':  checkInputValidity('company_details','company_phone_number',[ 'minLength', 'maxLength'])}">
                                 <p v-if="v$.company_details.company_phone_number.minLength.$invalid">
@@ -120,11 +125,11 @@
                                 </p>
                             </div>
                         </div>
-
-
+                    </div>
+                    <div class="row">
                         <div class="col-12">
                             <label class="mb-1">Company Address <span class="text-danger">*</span></label>
-                            <textarea class="form-control" v-model="company_details.company_address" :class="{ inputInvalidClass : checkInputValidity('company_details','company_address',['required'])}" placeholder="Company company_address " rows="2" required></textarea>
+                            <textarea class="form-control" v-model="company_details.company_address" :class="{ inputInvalidClass : checkInputValidity('company_details','company_address',['required'])}" placeholder="Company Address" rows="2" required></textarea>
                             <div  v-if="v$.company_details.company_address.$dirty" :class="{ 'text-danger':  checkInputValidity('company_details','company_address',['required'])}">
                                 <p v-if="v$.company_details.company_address.required.$invalid">
                                     Company Address is required.
@@ -322,6 +327,7 @@ import debounce from 'lodash/debounce';
                         icon: "success",
                         text: message,
                         showConfirmButton: false,
+                        timer:1500
                     });
                 })
                 .catch((error) => {

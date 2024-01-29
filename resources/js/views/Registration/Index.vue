@@ -1,10 +1,11 @@
 <template>
-    <Create @loadUpdatedparticipants="getparticipants"/>
+    <Rouelette :items="items"/>
+    <Create @loadUpdatedParticipants="getparticipants"/>
     <!-- <Show @loadUpdatedparticipants="participants" :participant_details="participant_details"/> -->
     <loading v-model:active="isLoading" :is-full-page="fullPage" color="#3176FF" :height="150" :weight="150" :opacity="0.4" loader="dots"/>
     <div class="row">
         <div class="col-10 mx-auto my-2">
-            <div class="d-flex justify-content-between mb-2">
+            <div class="d-flex justify-content-end mb-2">
                 <div id="import">
                     <button type="button" class="btn btn-primary text-end me-2" data-bs-toggle="modal" data-bs-target="#participant-registration-modal">
                         <i class="fa-solid fa-plus"></i>
@@ -23,6 +24,7 @@
                         <td>{{ data.company }}</td>
                         <td>{{ data.position }}</td>
                         <td class="text-center">
+                            <button class="btn btn-sm btn-success me-2" @click="playRoulette(data.id)"><i class="fa-solid fa-gamepad"></i></button>
                             <button class="btn btn-sm btn-primary me-2" @click="viewparticipantDetails(data.id)"><i class="fa-solid fa-eye"></i></button>
                         </td>
                     </tr>
@@ -34,6 +36,7 @@
 
 <script>
 import Create from './Create.vue';
+import Rouelette from './Components/WheelOfFortune.vue';
 import Show from './Show.vue';
 import Modal from '@/components/Modal/modal.vue';
 import { formatDate, titleCase } from '@/helpers/Formatter/Date.js';
@@ -47,6 +50,7 @@ import Loading from 'vue-loading-overlay';
             return{
                 isExportAll:false,
                 data:[],
+                playGame:false,
                 columns:[
                     {
                         name:'Event',
@@ -97,7 +101,8 @@ import Loading from 'vue-loading-overlay';
                 participant_details:null,
                 auth_token: `Bearer ${localStorage.getItem('auth-token')}`,
                 isLoading: false,
-                fullPage: false
+                fullPage: false,
+                items:[]
             }
         },
         components: {
@@ -105,7 +110,8 @@ import Loading from 'vue-loading-overlay';
             Modal,
             Create,
             Show,
-            Loading
+            Loading,
+            Rouelette
         },
         async created(){
             await this.getparticipants();
@@ -134,6 +140,43 @@ import Loading from 'vue-loading-overlay';
                     console.log(error,'ERROR');
                 });
             },
+
+            async getItems(){
+                console.log('GET ITEMS');
+                await axios.get('/api/raffle/get-items', { 
+                    headers: {
+                        Authorization: this.auth_token
+                    }
+                })
+                .then((response) => {
+                    const { items } = response.data;
+                    const colors = ['#45ace9','#dd3832','#fef151'];
+                    const formattedData = items.map(item =>{
+                        const index = Math.floor(Math.random() * colors.length);
+                        console.log(index,'index');
+                        return{
+                            ...item,
+                            value:item.name,
+                            weight: 1,
+                            color: '#ffffff',
+                            bgColor: colors[index],
+                        }
+                    })
+                    this.items = formattedData;
+                }).catch((error) =>{
+                    console.log(error,'ERROR');
+                });
+            },
+
+            async playRoulette(participant_id){
+                await this.getItems();
+                this.isLoading = true;
+                const id = document.getElementById('participant-roulette-modal');
+                const modal = bootstrap.Modal.getOrCreateInstance(id);
+                console.log(participant_id);
+                this.isLoading = false;
+                modal.show();
+            }, 
 
             async viewparticipantDetails(participant_id){
                 const id = document.getElementById('participant-details-modal');
