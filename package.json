@@ -9,7 +9,8 @@
         "axios": "^1.6.2",
         "laravel-vite-plugin": "^1.0.0",
         "sass": "^1.69.7",
-        "vite": "^5.0.0"
+        "vite": "^5.0.0",
+        "vue-confetti-explosion": "^1.0.2"
     },
     "dependencies": {
         "@fortawesome/fontawesome-free": "^6.5.1",
@@ -34,7 +35,6 @@
         "vue-router": "^4.2.5",
         "vue-select": "^4.0.0-beta.6",
         "vue3-form-wizard": "^0.2.3",
-        "vue3-roulette": "^0.3.3",
         "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.1/xlsx-0.20.1.tgz"
     }
 }

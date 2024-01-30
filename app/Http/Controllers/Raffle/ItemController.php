@@ -49,7 +49,7 @@ class ItemController extends Controller
     }
 
     public function items(){
-        $items = Item::select('id','name')->active()->latest()->get();
+        $items = Item::select('id','name','chance_rate','quantity','image')->active()->latest()->get();
         return response(['items' => $items]);
     }
 }

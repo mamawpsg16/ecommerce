@@ -1,33 +1,39 @@
 <template>
-      <Modal class="modal-lg text-center" targetModal="participant-roulette-modal" modaltitle="Roulette">
+      <Modal class="modal-lg text-center" targetModal="participant-roulette-modal"  :backdrop="true" :escKey="false" modaltitle="Roulette">
         <template #body>
-            <FortuneWheel
-             ref="wheel_of_fortune"
-             style="width: 500px; max-width: 100%;"
-             :useWeight="true"
-             :verify="canvasVerify"
-             :canvas="canvasOptions"
-             :prizes="prizesFromItems"
-             @rotateStart="onCanvasRotateStart"
-             @rotateEnd="onRotateEnd"
-           />
-        </template>
+            <template v-if="items.length">
+                <FortuneWheel
+                 ref="wheel_of_fortune"
+                 style="width: 500px; max-width: 100%;"
+                 :useWeight="true"
+                 :verify="canvasVerify"
+                 :canvas="canvasOptions"
+                 :prizes="items"
+                 @rotateStart="onCanvasRotateStart"
+                 @rotateEnd="onRotateEnd"
+               />
+            </template>
+        </template> 
     </Modal>
 </template>
 
 <script>
 import Modal from '@/components/Modal/modal.vue';
 import FortuneWheel from 'vue-fortune-wheel'
+import defaultProduct from '@/../../public/storage/default_images/product.png';
+import { SwalDefault } from '@/helpers/Notification/sweetAlert.js';
     export default {
         name:'WheelOfFortune',
 
         props:{
-            items:[Array, Object]
+            items:[Array, Object],
+            participant_id:[Number],
+            event_id:[Number],
         },
-
+        emits:['toggleConfetti'],
         components:{
             FortuneWheel,
-            Modal
+            Modal,
         },
 
         data(){
@@ -42,15 +48,10 @@ import FortuneWheel from 'vue-fortune-wheel'
                     lineHeight: 30
                 },
                 prizes:[
-                    {
-                        id: 1, 
-                        name: 'Example', 
-                        value: 'Blue\'s value', 
-                        bgColor: '#45ace9', 
-                        color: '#ffffff',
-                        probability: 100 
-                    },
-                ]
+                   
+                ],
+                done:false,
+                auth_token:`Bearer ${localStorage.getItem('auth-token')}`,
             }
         },
 
@@ -74,6 +75,8 @@ import FortuneWheel from 'vue-fortune-wheel'
             },
 
             onCanvasRotateStart (rotate) {
+                this.$emit('toggleConfetti',false);
+                this.done = false;
                 if (this.canvasVerify) {
                     const verified = true // true: the test passed the verification, false: the test failed the verification
                     this.testRequest(verified, this.verifyDuration * 1000).then((verifiedRes) => {
@@ -88,9 +91,44 @@ import FortuneWheel from 'vue-fortune-wheel'
                 }
             },
 
+            async storeParticipantItem(prize){
+                axios.put('/api/raffle/store-participant-item',{participant_id:this.participant_id, item:prize, event_id:this.event_id},{
+                    headers:{
+                        Authorization: this.auth_token,
+                    }
+                })
+                .then((response) => {
+                    console.log(response,'response wheel of fortune');                      
+                })
+                .catch((error) => {
+                    this.isSaving = false;
+                    if(error.response.status == 422){
+                        this.errors = error.response.data.errors;
+                        SwalDefault.close();
+                    }
+                });
+            },
 
-            onRotateEnd (prize) {
-                console.log(prize.value)
+
+            async onRotateEnd (prize) {
+                SwalDefault.fire({
+                            title: "Congratulations!",
+                            text: `You win ${prize.quantity} pc\\s of ${prize.name}.`,
+                            imageUrl: prize.image ? prize.item_image : defaultProduct,
+                            imageWidth: 400,
+                            imageHeight: 200,
+                            imageAlt: "Item image",
+                            showConfirmButton: true,
+                        });
+
+                await this.storeParticipantItem(prize);
+
+                this.$emit('toggleConfetti',true);
+
+                
+                const id = document.getElementById('participant-roulette-modal');
+                const modal = bootstrap.Modal.getOrCreateInstance(id);
+                modal.hide();
             },
         },  
 
@@ -102,8 +140,8 @@ import FortuneWheel from 'vue-fortune-wheel'
             items:{
                 handler(data){
                     if(data.length){
+                        this.prizes = [];
                         if (this.items && this.items.length) {
-                            this.$nextTick();
                             this.prizes  = this.items;
                         }
                     }

@@ -1,7 +1,7 @@
 <template>
-    <Rouelette :items="items"/>
-    <Create @loadUpdatedParticipants="getparticipants"/>
-    <!-- <Show @loadUpdatedparticipants="participants" :participant_details="participant_details"/> -->
+    <ConfettiExplosion v-if="showConfetti" :particleCount="200" :stageWidth="5000" />
+    <Create @loadUpdatedParticipants="getparticipants"  @toggleConfetti="toggleConfettiComponent"/>
+    <Show @loadUpdatedparticipants="getparticipants" :participant_details="participant_details"/>
     <loading v-model:active="isLoading" :is-full-page="fullPage" color="#3176FF" :height="150" :weight="150" :opacity="0.4" loader="dots"/>
     <div class="row">
         <div class="col-10 mx-auto my-2">
@@ -18,6 +18,7 @@
                         <td>{{ data.event }}</td>
                         <td>{{ data.name }}</td>
                         <td>{{ data.email }}</td>
+                        <td>{{ data.age }}</td>
                         <td>{{ data.birth_date }}</td>
                         <td>{{ data.personal_phone_number }}</td>
                         <td>{{ data.industry }}</td>
@@ -35,8 +36,9 @@
 </template>
 
 <script>
+import ConfettiExplosion from "vue-confetti-explosion";
 import Create from './Create.vue';
-import Rouelette from './Components/WheelOfFortune.vue';
+// import Rouelette from './Components/WheelOfFortune.vue';
 import Show from './Show.vue';
 import Modal from '@/components/Modal/modal.vue';
 import { formatDate, titleCase } from '@/helpers/Formatter/Date.js';
@@ -46,6 +48,7 @@ import Dataset from '@/components/Dataset/Index.vue';
 import Loading from 'vue-loading-overlay';
     export default {
         name:'Registration Index',
+        emits:['toggleConfetti'],
         data(){
             return{
                 isExportAll:false,
@@ -65,6 +68,11 @@ import Loading from 'vue-loading-overlay';
                     {
                         name:'Email',
                         field:'email',
+                        sort:''
+                    },
+                    {
+                        name:'Age',
+                        field:'age',
                         sort:''
                     },
                     {
@@ -102,7 +110,8 @@ import Loading from 'vue-loading-overlay';
                 auth_token: `Bearer ${localStorage.getItem('auth-token')}`,
                 isLoading: false,
                 fullPage: false,
-                items:[]
+                items:[],
+                showConfetti:false
             }
         },
         components: {
@@ -111,7 +120,9 @@ import Loading from 'vue-loading-overlay';
             Create,
             Show,
             Loading,
-            Rouelette
+            // Rouelette,
+            ConfettiExplosion
+
         },
         async created(){
             await this.getparticipants();
@@ -131,7 +142,8 @@ import Loading from 'vue-loading-overlay';
                             ...participant,
                             name:participant.name,
                             birth_date: formatDate(undefined, participant.birth_date, 'date'),
-                            event: participant.events.map(event => event.name).join(', ')
+                            event: participant.events.map(event => event.name).join(', '),
+                            age:this.getAge(participant.birth_date)
                         }
                     });
 
@@ -139,6 +151,23 @@ import Loading from 'vue-loading-overlay';
                 }).catch((error) =>{
                     console.log(error,'ERROR');
                 });
+            },
+
+            getAge(birth_date){
+                const birthDate = new Date(birth_date);
+                const today = new Date();
+
+                // Calculate the difference in years
+                const age = today.getFullYear() - birthDate.getFullYear();
+
+                // Check if the birthday has occurred this year
+                const hasBirthdayOccurred = (today.getMonth() > birthDate.getMonth()) || 
+                                            (today.getMonth() === birthDate.getMonth() && today.getDate() >= birthDate.getDate());
+
+                // If birthday has not occurred yet this year, subtract 1 from age
+                const finalAge = hasBirthdayOccurred ? age : age - 1;
+
+                return finalAge == -1 ? 0 : finalAge;
             },
 
             async getItems(){
@@ -150,14 +179,15 @@ import Loading from 'vue-loading-overlay';
                 })
                 .then((response) => {
                     const { items } = response.data;
-                    const colors = ['#45ace9','#dd3832','#fef151'];
+                    const colors = ['#039D48','#601112','#1A3A7B',"#DA5F20","#F8D904"];
                     const formattedData = items.map(item =>{
                         const index = Math.floor(Math.random() * colors.length);
-                        console.log(index,'index');
+                        
                         return{
                             ...item,
                             value:item.name,
-                            weight: 1,
+                            quantity:item.quantity,
+                            weight: item.chance_rate,
                             color: '#ffffff',
                             bgColor: colors[index],
                         }
@@ -166,6 +196,10 @@ import Loading from 'vue-loading-overlay';
                 }).catch((error) =>{
                     console.log(error,'ERROR');
                 });
+            },
+
+            toggleConfettiComponent(show){
+                this.showConfetti = show;
             },
 
             async playRoulette(participant_id){
@@ -182,20 +216,26 @@ import Loading from 'vue-loading-overlay';
                 const id = document.getElementById('participant-details-modal');
                 const modal = bootstrap.Modal.getOrCreateInstance(id);
                 this.isLoading = true;
-                await axios.get(`/api/participant/${participant_id}`, {
+                await axios.get(`/api/raffle/participants/${participant_id}`, {
                     headers:{
                         Authorization: this.auth_token
                     }
                 }).then((response) => {
                     const { participant } = response.data;
-                    
-                    // const birth_date = formatDate(undefined, participant.date_of_birth, 'date');
-                    
-                    this.participant_details = {
-                            ...participant,
-                            name: participant.name,
-                          
-                    }; 
+                    const constructedDetails =  {
+                        ...participant,
+                        birthday: formatDate(undefined, participant.birth_date, 'date'),
+                        event:{label:participant.events[0].name, value:participant.events[0].id},
+                        event_name:participant.events[0].name,
+                        company_details:{
+                            industry: participant.industry,
+                            company: participant.company,
+                            position: participant.position,
+                            company_phone_number: participant.company_phone_number,
+                            company_address: participant.company_address,
+                        },
+                    }
+                    this.participant_details =  constructedDetails;
 
                 }).catch((error) => {
                     console.log(error)

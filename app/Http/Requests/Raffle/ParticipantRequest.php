@@ -37,7 +37,6 @@ class ParticipantRequest extends FormRequest
             'industry' => ['required'],
             'position' => ['required'],
             'event' => ['required'],
-            'age' => ['required', 'numeric'],
         ];
       
     }

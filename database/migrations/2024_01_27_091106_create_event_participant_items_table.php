@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('event_id');
             $table->foreignId('participant_id');
+            $table->foreignId('item_id');
             $table->string('item_name',100);
             $table->integer('quantity');
             $table->timestamps();
@@ -22,6 +23,7 @@ return new class extends Migration
             $table->index('event_id');
             $table->index('participant_id');
             $table->index('item_name');
+            $table->index('item_id');
         });
     }
 

@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('name',150);
             $table->string('description',150)->nullable();
+            $table->integer('quantity');
+            $table->integer('chance_rate')->default(1);
             $table->string('image',255)->nullable();
-            $table->integer('order');
             $table->boolean('active')->default(true);
             $table->timestamps();
 

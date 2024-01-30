@@ -77,8 +77,7 @@ Route::middleware('auth:sanctum')->group(function(){
         ]);
 
         Route::get('get-items', [ItemController::class, 'items']);
-
-
+        Route::put('store-participant-item', [ParticipantController::class, 'storeItem']);
     });
 
 });
