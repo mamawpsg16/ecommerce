@@ -4,9 +4,10 @@
             <template v-if="items.length">
                 <FortuneWheel
                  ref="wheel_of_fortune"
-                 style="width: 500px; max-width: 100%;"
+                 style="width: 700px; max-width: 100%;"
                  :useWeight="true"
                  :verify="canvasVerify"
+                 :duration="10000"
                  :canvas="canvasOptions"
                  :prizes="items"
                  @rotateStart="onCanvasRotateStart"
@@ -20,7 +21,7 @@
 <script>
 import Modal from '@/components/Modal/modal.vue';
 import FortuneWheel from 'vue-fortune-wheel'
-import defaultProduct from '@/../../public/storage/default_images/product.png';
+import defaultProduct from '@/../../public/storage/item/default/dog.png';
 import { SwalDefault } from '@/helpers/Notification/sweetAlert.js';
     export default {
         name:'WheelOfFortune',
@@ -42,10 +43,15 @@ import { SwalDefault } from '@/helpers/Notification/sweetAlert.js';
                 canvasVerify:false, // Whether the turntable in canvas mode is enabled for verification
                 verifyDuration: 2,
                 canvasOptions: {
-                    btnWidth: 140,
-                    borderColor: '#584b43',
+                    btnWidth: 150,
+                    borderColor: '#E6C805',
                     borderWidth: 6,
-                    lineHeight: 30
+                    lineHeight: 20,
+                    textRadius:230,
+                    fontSize: 20,
+                    textLength:18,
+                    textDirection:'vertical',
+                    btnText:"GO"
                 },
                 prizes:[
                    
@@ -111,21 +117,19 @@ import { SwalDefault } from '@/helpers/Notification/sweetAlert.js';
 
 
             async onRotateEnd (prize) {
-                SwalDefault.fire({
-                            title: "Congratulations!",
-                            text: `You win ${prize.quantity} pc\\s of ${prize.name}.`,
-                            imageUrl: prize.image ? prize.item_image : defaultProduct,
-                            imageWidth: 400,
-                            imageHeight: 200,
-                            imageAlt: "Item image",
-                            showConfirmButton: true,
-                        });
-
                 await this.storeParticipantItem(prize);
 
                 this.$emit('toggleConfetti',true);
-
-                
+               SwalDefault.fire({
+                    title: "Congratulations!",
+                    text: `You win ${prize.name}.`,
+                    imageUrl: prize.image ? prize.item_image : defaultProduct,
+                    imageWidth: 400,
+                    imageHeight: 200,
+                    imageAlt: "Item image",
+                    showConfirmButton: true,
+                });
+              
                 const id = document.getElementById('participant-roulette-modal');
                 const modal = bootstrap.Modal.getOrCreateInstance(id);
                 modal.hide();
