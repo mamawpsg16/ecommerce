@@ -23,12 +23,18 @@
                         </router-link>
                         <ul class="dropdown-menu" id="menu-picker">
                             <router-link class="dropdown-item" :to="{ name: 'users' }">Users</router-link>
-                            <router-link class="dropdown-item" :to="{ name: 'registration-index' }">Registration</router-link>
                             <router-link class="dropdown-item" :to="{ name: 'shop-index' }">Shops</router-link>
                             <router-link class="dropdown-item" :to="{ name: 'product-index' }">Products</router-link>
                             <router-link class="dropdown-item" :to="{ name: 'roles' }">Roles</router-link>
                             <router-link class="dropdown-item" :to="{ name: 'permissions' }">Permissions</router-link>
                             <router-link class="dropdown-item" :to="{ name: 'menus' }">Menus</router-link>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <router-link class="dropdown-item" :to="{ name: 'registration-index' }">Registration</router-link>
+                            <router-link class="dropdown-item" :to="{ name: 'participant-index' }">Participants</router-link>
+                            <router-link class="dropdown-item" :to="{ name: 'item-index' }">Items</router-link>
+                            <router-link class="dropdown-item" :to="{ name: 'event-index' }">Events</router-link>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
