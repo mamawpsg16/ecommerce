@@ -6,7 +6,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                     <h5 class="modal-title" :id="`${targetModal}Label`" v-if="modaltitle">{{ modaltitle }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button v-if="closable" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <slot name="body">
@@ -39,6 +39,10 @@
             default:false
            },
            escKey:{
+            type:Boolean,
+            default:true
+           },
+           closable:{
             type:Boolean,
             default:true
            },

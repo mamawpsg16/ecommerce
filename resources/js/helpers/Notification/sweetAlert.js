@@ -4,6 +4,7 @@ import "sweetalert2/dist/sweetalert2.min.css";
 
 let defaultConfig = {
     timer: 2000,
+    width: 450,
     toast: true, // Use toast mode
     position: "bottom-end", // You can adjust the position as needed
     showClass: {

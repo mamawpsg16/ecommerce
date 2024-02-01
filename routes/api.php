@@ -73,11 +73,17 @@ Route::middleware('auth:sanctum')->group(function(){
         Route::apiResources([
             'participants' => ParticipantController::class,
             'items'    => ItemController::class,
+            'events'    => EventController::class,
             // 'participants' => EventController::class,
         ]);
 
         Route::get('get-items', [ItemController::class, 'items']);
         Route::put('store-participant-item', [ParticipantController::class, 'storeItem']);
+
+        Route::post('update-item', [ItemController::class, 'updateItem']);
+        /** DATA UPDATE STATUS */
+        Route::post('event-change-status', [EventController::class, 'updateStatus']);
+        Route::post('item-change-status', [ItemController::class, 'updateStatus']);
     });
 
 });

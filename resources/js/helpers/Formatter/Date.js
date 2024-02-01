@@ -40,3 +40,9 @@ export const formatCurrency = function (locale =undefined, amount = '0.00',  opt
 export const titleCase = function(word){
     return word ? word.charAt(0).toUpperCase() + word.slice(1) : '';
 }
+
+export const formatDateSlash = function (date = new Date(), format = "MM/DD/YYYY") {
+    const options = { year: "numeric", month: "2-digit", day: "2-digit" };
+    const formatted = new Intl.DateTimeFormat("en-US", options).format(new Date(date));
+    return formatted.replace(/\//g, "/");
+};

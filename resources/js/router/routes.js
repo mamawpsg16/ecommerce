@@ -32,11 +32,6 @@ const routes = [
         component: () => import("@/views/Dashboard/Index.vue")
     },
     {
-        path: "/registration",
-        name: "registration-index",
-        component: () => import("@/views/Registration/Index.vue"),
-    },
-    {
         path: "/product",
         children: [
             {
@@ -112,8 +107,26 @@ const routes = [
         name: "canvas",
         component: () => import("@/views/Test/Canvas.vue")
     },
-   
-
+    {
+        path: "/registration",
+        name: "registration-index",
+        component: () => import("@/views/Raffle/Registration/Index.vue"),
+    },
+    {
+        path: "/participants",
+        name: "participant-index",
+        component: () => import("@/views/Raffle/Participant/Index.vue"),
+    },
+    {
+        path: "/items",
+        name: "item-index",
+        component: () => import("@/views/Raffle/Item/Index.vue"),
+    },
+    {
+        path: "/events",
+        name: "event-index",
+        component: () => import("@/views/Raffle/Event/Index.vue"),
+    },
     
  
 ];

@@ -16,14 +16,37 @@ class ParticipantController extends Controller
      */
     public function index()
     {
+        try {
+            $participants = DB::table('participants')
+            ->select(
+                'participants.id',
+                'participants.name',
+                'participants.email',
+                'participants.birth_date',
+                'participants.personal_phone_number',
+                'participants.company_phone_number',
+                'participants.industry',
+                'participants.company',
+                'participants.position',
+                'participants.created_at',
+                'participants.updated_at',
+                'event_items.name AS item',
+                'event_participant_items.quantity',
+                'events.name AS event'
+            )
+            ->join('event_participant', 'participants.id', '=', 'event_participant.participant_id')
+            ->join('events', 'event_participant.event_id', '=', 'events.id')
+            ->join('event_participant_items', function ($join) {
+                $join->on('events.id', '=', 'event_participant_items.event_id')
+                     ->on('participants.id', '=', 'event_participant_items.participant_id');
+            })
+            ->join('event_items', 'event_participant_items.item_id', '=', 'event_items.id')
+            ->get();
         
-       $participants = Participant::with(['events'])->get();
-    //    $participants = Participant::join('event_participant', 'participants.id', '=', 'event_participant.participant_id')
-    //    ->join('events', 'event_participant.event_id', '=', 'events.id')
-    //    ->join('items', 'event_participant.event_id', '=', 'events.id')
-    //    ->get();
-
-       return response(['participants' => $participants]);
+            return response(['participants' => $participants]);
+        } catch (\Exception $e) {
+            return response(['error' => 'Failed to participant item.'.$e->getMessage()], 500);
+        }
     }
 
     /**
