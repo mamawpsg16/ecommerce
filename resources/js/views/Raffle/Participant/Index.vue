@@ -1,6 +1,6 @@
 <template>
-    <ConfettiExplosion v-if="showConfetti" :particleCount="200" :stageWidth="5000" />
-    <Rouelette v-if="items.length" :items="items" @toggleConfetti="toggleConfettiComponent"/>
+    <!-- <ConfettiExplosion v-if="showConfetti" :particleCount="200" :stageWidth="5000" /> -->
+    <!-- <Rouelette v-if="items.length" :items="items" @toggleConfetti="toggleConfettiComponent"/> -->
     <!-- <Create @loadUpdatedParticipants="getparticipants"  @toggleConfetti="toggleConfettiComponent"/> -->
     <Show @loadUpdatedparticipants="getparticipants" :participant_details="participant_details"/>
     <loading v-model:active="isLoading" :is-full-page="fullPage" color="#3176FF" :height="150" :weight="150" :opacity="0.4" loader="dots"/>
@@ -42,9 +42,9 @@
 </template>
 
 <script>
-import ConfettiExplosion from "vue-confetti-explosion";
+// import ConfettiExplosion from "vue-confetti-explosion";
 // import Create from './Create.vue';
-import Rouelette from './Components/WheelOfFortune.vue';
+// import Rouelette from './Components/WheelOfFortune.vue';
 import Show from './Show.vue';
 import Modal from '@/components/Modal/modal.vue';
 import { formatDate, formatDateSlash } from '@/helpers/Formatter/Date.js';
@@ -148,11 +148,11 @@ import Loading from 'vue-loading-overlay';
         components: {
             Dataset,
             Modal,
-            // Create,
             Show,
             Loading,
-            Rouelette,
-            ConfettiExplosion
+            // Create,
+            // Rouelette,
+            // ConfettiExplosion
 
         },
         async created(){

@@ -157,7 +157,7 @@
 </template>
 
 <script>
-import Rouelette from './Components/WheelOfFortune.vue';
+// import Rouelette from './Components/WheelOfFortune.vue';
 import Modal from '@/components/Modal/modal.vue';
 import Input from '@/components/Form/Input.vue'
 import {FormWizard, TabContent} from 'vue3-form-wizard'
@@ -233,7 +233,7 @@ import VueMultiselect from 'vue-multiselect'
             Input,
             VueDatePicker,
             VueMultiselect,
-            Rouelette
+            // Rouelette
         },
 
         async created(){

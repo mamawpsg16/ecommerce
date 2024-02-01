@@ -1,7 +1,7 @@
 <template>
     <Modal class="modal-lg" targetModal="participant-registration-modal" modaltitle="Event Registration" :backdrop="true" :escKey="false">
         <template #body>
-            <Rouelette v-if="items.length" :items="items" :participant_id="participant_id" :event_id="event_id" @toggleConfetti="toggleConfettiComponent"/>
+            <!-- <Rouelette v-if="items.length" :items="items" :participant_id="participant_id" :event_id="event_id" @toggleConfetti="toggleConfettiComponent"/> -->
             <form-wizard @on-complete="registerConfirmation" finishButtonText="Register" ref="formWizard" subtitle="Event Registration" :validateOnBack="true" color="#3176FF">
                 <tab-content title="Personal Information" icon="fa-solid fa-user" :beforeChange="validateParticipantDetails">
                     <div class="row justify-content-center mb-3">
@@ -155,7 +155,7 @@
 </template>
 
 <script>
-import Rouelette from './Components/WheelOfFortune.vue';
+// import Rouelette from './Components/WheelOfFortune.vue';
 import Modal from '@/components/Modal/modal.vue';
 import Input from '@/components/Form/Input.vue'
 import {FormWizard, TabContent, WizardButton} from 'vue3-form-wizard'
@@ -224,7 +224,7 @@ import VueMultiselect from 'vue-multiselect'
             Input,
             VueDatePicker,
             VueMultiselect,
-            Rouelette,
+            // Rouelette,
             WizardButton
         },
         computed:{
