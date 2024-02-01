@@ -14,16 +14,22 @@ class Item extends Model
 
     protected $guarded = ['id'];
     protected $table = 'event_items';
+
+    protected static function booted()
+    {
+        static::creating(function ($model) {
+            $model->order = self::max('order') + 1;
+        });
+    }
     
     public function scopeActive($query): void
     {
         $query->where('active', 1);
     }
 
-
     protected function itemImage(): Attribute
     {
-        $asset =  $this->image ? "/event_items/".$this->image : "";
+        $asset =  $this->image ? "/item/images/".$this->image : "/default_images/product.png";
         return new Attribute(
             get: fn () => asset("storage".$asset),
         );
