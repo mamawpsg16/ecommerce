@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('event_participant_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('event_id');
-            $table->foreignId('participant_id');
-            $table->foreignId('item_id');
+            $table->foreignId('event_id')->constrained();
+            $table->foreignId('participant_id')->constrained();
+            $table->foreignId('item_id')->constrained('event_items');
             $table->string('item_name',100);
             $table->integer('quantity');
             $table->timestamps();
