@@ -140,7 +140,7 @@ class ShopController extends Controller
 
     public function shopDetails(Request $request, Shop $shop){
 
-        $products = Product::select('id', 'name', 'image', 'description', 'price', 'quantity', 'created_at', 'updated_at')->where('shop_id', $shop->id)->active()->latest()->get();
+        $products = Product::select('id', 'name', 'image', 'description', 'price', 'quantity', 'created_at', 'updated_at', 'slug')->where('shop_id', $shop->id)->active()->latest()->get();
        
         return response(['products' => $products, 'shop' => $shop]);
     }
