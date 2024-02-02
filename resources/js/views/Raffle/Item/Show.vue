@@ -34,6 +34,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="row mb-3">
                     <div class="col-4">
                         <label>Name <span class="text-danger" v-if="edit">*</span></label>
@@ -78,6 +79,21 @@
                     </div>
                 </div>
 
+                <div class="row mb-3">
+                    <div class="col-4">
+                        <label>Color <code>(Hex)</code><span class="text-danger">*</span></label>
+                        <Input type="text" v-model="item.color" :disabled="!edit" :class="{ inputInvalidClass: checkInputValidity('item', 'color', ['required']) }"  autocomplete="item_color" />
+                        <div v-if="v$.item.color.$dirty"
+                            :class="{ 'text-danger': checkInputValidity('item', 'color', ['required']) }">
+                            <p v-if="v$.item.color.required.$invalid">
+                                Color is required.
+                            </p>
+                        </div>
+                        <div v-if="errors?.color" class="text-danger">
+                            {{ errors?.color[0] }}
+                        </div>
+                    </div>
+                </div>
                 <div class="row mb-3">
                     <div class="col-12">
                         <label>Description</label>
@@ -142,22 +158,18 @@ import { swalConfirmation, SwalDefault } from '@/helpers/Notification/sweetAlert
                     quantity:false,
                     chance_rate:false,
                     order:false,
+                    color:false,
                 }],
                 item:{
                     name:null,
                     description:null,
                     quantity:null,
                     price:null,
-                    categories:null,
+                    color:null,
                 },
-                categories:[],
-                edit_categories:null,
-                loadingCategories:false,
                 auth_token:`Bearer ${localStorage.getItem('auth-token')}`,
                 edit:false,
                 isUpdating:false,
-                emailExists:false,
-                firstStepDisable:false,
                 prevDetails:null,
                 shops:[],
                 loadingShops:false,
@@ -171,6 +183,7 @@ import { swalConfirmation, SwalDefault } from '@/helpers/Notification/sweetAlert
                     quantity: { required },
                     chance_rate: { required },
                     order: { required },
+                    color: { required },
                 },
             }
         },
@@ -304,6 +317,7 @@ import { swalConfirmation, SwalDefault } from '@/helpers/Notification/sweetAlert
                 formData.append('order', this.item.order);
                 formData.append('quantity', this.item.quantity);
                 formData.append('chance_rate', this.item.chance_rate);
+                formData.append('color', this.item.color);
                 formData.append('delete_image', this.delete_image);
                 formData.append('active', this.item.active ? 1 : 0);
 

@@ -17,14 +17,15 @@
                         <td>{{ data.name }}</td>
                         <td>{{ data.description }}</td>
                         <td>{{ data.quantity }}</td>
+                        <td :style="{ backgroundColor: data.color }"></td>
                         <td>{{ data.chance_rate }}</td>
                         <td>{{ data.order }}</td>
                         <td> 
-                            <div class="dropdown">
+                            <div class="dropdown" >
                                 <button :class="`btn btn-sm rounded-pill  btn-secondary dropdown-toggle px-4 btn-${data.active ? 'success' : 'danger'}`"  type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     {{ data.status}}
                                 </button>
-                                <ul class="dropdown-menu fs-sm">
+                                <ul class="dropdown-menu fs-sm" id="menu-picker">
                                     <li>
                                         <a class="dropdown-item" aria-current="true" :active="data.active === status.value" v-for="status in data_status" :key="status.value" type="button" @click="updateStatusConfirmation(data.id, index, status.value)">{{ status.label }}</a>
                                     </li>
@@ -75,6 +76,11 @@ import { get } from '@/helpers/Export/index.js';
                     {
                         name:'Quantity',
                         field:'quantity',
+                        sort:''
+                    },
+                    {
+                        name:'Color',
+                        field:'color',
                         sort:''
                     },
                     {
@@ -269,4 +275,15 @@ import { get } from '@/helpers/Export/index.js';
 </script>
 
 <style scoped>
+#menu-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+#menu-picker {
+  position: absolute;
+  z-index: 1000;
+  top: 100%;
+  left: 0;
+}
 </style>

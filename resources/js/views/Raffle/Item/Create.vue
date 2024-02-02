@@ -62,6 +62,22 @@
                 </div>
 
                 <div class="row mb-3">
+                    <div class="col-4">
+                        <label>Color <code>(Hex)</code><span class="text-danger">*</span></label>
+                        <Input type="text" v-model="item.color" :class="{ inputInvalidClass: checkInputValidity('item', 'color', ['required']) }"  autocomplete="item_color" />
+                        <div v-if="v$.item.color.$dirty"
+                            :class="{ 'text-danger': checkInputValidity('item', 'color', ['required']) }">
+                            <p v-if="v$.item.color.required.$invalid">
+                                Color is required.
+                            </p>
+                        </div>
+                        <div v-if="errors?.color" class="text-danger">
+                            {{ errors?.color[0] }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
                     <div class="col-12">
                         <label>Description</label>
                         <textarea class="form-control" rows="5" v-model="item.description" />
@@ -104,11 +120,13 @@ export default {
                 description: null,
                 quantity: 1,
                 chance_rate: 1,
+                color: null,
             },
             errors:[{
                     name:false,
                     quantity:false,
                     chance_rate:false,
+                    color:false,
                 }],
             isSaving: false,
             auth_token: `Bearer ${localStorage.getItem('auth-token')}`,
@@ -120,6 +138,7 @@ export default {
                 name: { required },
                 quantity: { required },
                 chance_rate: { required },
+                color: { required },
             },
         }
     },
@@ -167,6 +186,7 @@ export default {
                 description: null,
                 quantity: 1,
                 chance_rate: 1,
+                color: null,
             };
             document.querySelector('#create-item-form').reset();
             this.v$.$reset();
@@ -185,6 +205,7 @@ export default {
             formData.append('description', this.item.description ?? '');
             formData.append('quantity', this.item.quantity);
             formData.append('chance_rate', this.item.chance_rate);
+            formData.append('color', this.item.color);
 
             axios.post('/api/raffle/items', formData, {
                 headers: {

@@ -35,6 +35,7 @@ class ItemController extends Controller
                     'description'   => ['sometimes'],
                     'quantity'      => ['required'],
                     'chance_rate'   => ['required'],
+                    'color'         => ['required'],
                 ]);
         
                 if ($validator->fails()) {
@@ -79,6 +80,7 @@ class ItemController extends Controller
                     'quantity'      => ['required'],
                     'chance_rate'   => ['required'],
                     'order'         => ['required', Rule::unique('event_items')->ignore($request->id)],
+                    'color'         => ['required'],
                     'active'        => ['required'],
                     'delete_image'        => ['required'],
                 ]);
@@ -147,9 +149,9 @@ class ItemController extends Controller
 
     private function uploadImage($request, $item, $edit = false) {
         $file = $request->file('item_image');
-    
+        $delete_image = filter_var($request->delete_image, FILTER_VALIDATE_BOOLEAN);
         // DELETE EXISTING IMAGE
-        if ($edit && $request->delete_image) {
+        if ($edit && $delete_image) {
             $this->deleteImage($item);
             $item->image = null;
             $item->save();
