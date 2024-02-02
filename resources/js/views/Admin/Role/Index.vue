@@ -149,7 +149,7 @@ import { get } from '@/helpers/Export/index.js';
                         Authorization: this.auth_token
                     }
                 }).then((response) => {
-                    const { data, menu_permissions, menu_ids} = response.data;
+                    const { data, menu_permissions, menu_ids, menu_permission_ids} = response.data;
                     console.log(menu_permissions, 'menu_permissions');
                     this.role_id = data.id;
                     this.index = index;
@@ -159,6 +159,7 @@ import { get } from '@/helpers/Export/index.js';
 
                     data.menu_permissions = menu_permissions;
                     data.menu_ids = menu_ids;
+                    data.menu_permission_ids = menu_permission_ids;
                     this.role_details = data;
 
                 }).catch((error) => {

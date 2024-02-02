@@ -215,10 +215,20 @@ export default {
                 return result;
             }, {});
 
+            // const menu_permissions = {};
+            // menu_ids.forEach((menu_id,) => {
+            //     menu_permissions[menu_id] = result[menu_id]
+            // });
+            // console.log(menu_permissions,'menu_permissions');
+//             [
+//     1 => ['expires' => true],
+//     2 => ['expires' => true],
+// ]
+
             const role = {
                 ...this.role,
                 menu_ids: menu_ids,
-                permissions: result,
+                menu_permissions: result,
                 slug: generateUniqueSlug(this.role.name)
             };
 
@@ -255,7 +265,7 @@ export default {
         },
 
         async storeConfirmation() {
-            if (!await this.v$.$validate() && this.taggedPermissionsCount > 0) {
+            if (!await this.v$.$validate() || this.taggedPermissionsCount <= 0) {
                 return;
             }
             swalConfirmation().then((result) => {

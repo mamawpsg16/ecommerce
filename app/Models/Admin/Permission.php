@@ -22,4 +22,10 @@ class Permission extends Model
             ->withPivot('active')
             ->withTimestamps();
     }
+
+    
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class)->withPivot('active')->withTimestamps();
+    }
 }

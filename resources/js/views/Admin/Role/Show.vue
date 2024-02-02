@@ -1,5 +1,5 @@
 <template>
-    <Modal class="modal-lg" targetModal="role-details-modal" modaltitle="Menu Role Details" :backdrop="true" :escKey="false">
+    <Modal class="modal-lg" targetModal="role-details-modal" :modaltitle="role.name" :backdrop="true" :escKey="false">
         <template #body>
             <form @submit.prevent="updateConfirmation" class="mt-1" id="role-details-form">
                 <div class="row mb-3">
@@ -220,7 +220,7 @@ export default {
             let ids = [];
             const permission_details = this.role.permissions.reduce((result, element) => {
                 if (element.permissions_array.length) {
-                    ids.push(element.menu_id);
+                    ids.push(element.id);
                     result[element.menu_id] = element.permissions_array.map(permission => permission.value);
                 }
                 return result;
@@ -230,7 +230,8 @@ export default {
                 name:this.role.name,
                 menu_ids: ids,
                 id: this.role.id,
-                permissions: permission_details
+                permissions: permission_details,
+                menu_permission_ids: this.role_details.menu_permission_ids
             };
 
             console.log(role,'role');
@@ -277,7 +278,7 @@ export default {
 
 
         async updateConfirmation() {
-            if (!await this.v$.$validate()) {
+            if (!await this.v$.$validate() || this.taggedPermissionsCount <= 0) {
                 return;
             }
             swalConfirmation().then((result) => {
@@ -306,7 +307,9 @@ export default {
             this.menus.forEach(menu => {
                 if (this.role_details.menu_ids.includes(menu.value)) {
                     this.role_details.menu_permissions.forEach(details => {
+                        console.log(details,'details');
                         const permissions = details.permissions.split(',');
+                        console.log(permissions, 'permissions', permissions.includes(`${menu.value}`), `${menu.value}`);
                         if (permissions.includes(`${menu.value}`) && !processedMenuIds.has(menu.value)) {
                             const permissionsArray = permissions.map(permissionValue => {
                                 const matchingPermission = this.permissions.find(permission => permission.value == permissionValue);
@@ -319,6 +322,7 @@ export default {
                             });
                             permission_arr.push({
                                 menu_id: menu.value,
+                                id: details.id,
                                 checked: false,
                                 permissions_array: permissionsArray
                             });
@@ -329,6 +333,7 @@ export default {
                 } else {
                     permission_arr.push({
                         menu_id: menu.value,
+                        id: details.id,
                         checked: false,
                         permissions_array: []
                     });

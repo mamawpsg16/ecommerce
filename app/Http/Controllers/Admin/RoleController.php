@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Admin\Menu;
 use App\Models\Admin\Role;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -32,7 +33,7 @@ class RoleController extends Controller
 
                 $validator = Validator::make($request->all(), [
                     'name' => ['required', 'unique:roles'],
-                    'permissions' => ['required', 'array'],
+                    'menu_permissions' => ['required', 'array'],
                     'menu_ids' => ['required', 'array'],
                     'slug' => 'required',
                 ]);
@@ -44,24 +45,24 @@ class RoleController extends Controller
                 $data = $validator->validated();
                 $data['created_by'] = $email;
 
-                  
                 $role = Role::create($data);
 
                 $role->menus()->attach($data['menu_ids']);
-              
-                $dataToInsert = [];
 
-                foreach ($data['permissions'] as $menu_id => $permissions) {
-                    foreach ($permissions as $permission) {
-                        $dataToInsert[] = [
+                array_map(function($permission_ids, $menu_id) use($role){
+                    foreach($permission_ids as $id){
+                        $menu_permission_id = DB::table('menu_permission')->insertGetId([
                             'menu_id' => $menu_id,
-                            'permission_id' => $permission,
+                            'permission_id' => $id,
+                        ]);
+
+                        DB::table('menu_role_permission')->insert([
+                            'role_id' => $role->id,
+                            'menu_permission_id' => $menu_permission_id,
                             'created_at' => now(),
-                        ];
+                        ]);
                     }
-                }
-                
-                DB::table('menu_permissions')->insert($dataToInsert);
+                },$data['menu_permissions'], array_keys($data['menu_permissions']));
                 
                 return response(['data' => $role], 201);
             });
@@ -77,15 +78,20 @@ class RoleController extends Controller
      */
     public function show(Role $role)
     {
-        $menu_ids = $role->menus->pluck('id');
-        $menu_permissions = DB::table('menu_permissions')
-        ->select(DB::raw("GROUP_CONCAT(permission_id SEPARATOR ',') as permissions"), "menu_id")
-        ->whereIn('menu_id', $menu_ids)
-        ->groupBy('menu_id')
-        ->get();
         
-
-        return response(['data' => $role, 'menu_permissions' => $menu_permissions, 'menu_ids' => $menu_ids]);
+        $menu_ids = $role->menus->pluck('id');
+        // $menu_permission_ids  = DB::table('menu_role_permission')
+        //             ->where('role_id', $role->id)
+        //             ->pluck('id');
+        $menu_permissions= DB::table('menu_permission as mp')
+        ->select('mp.menu_id', 'mrp.role_id', 'mp.id', DB::raw('GROUP_CONCAT(mp.permission_id SEPARATOR ",") as permissions'))
+        ->join('menu_role_permission as mrp', 'mp.id', '=', 'mrp.menu_permission_id')
+        ->join('menu_role as mr', 'mp.menu_id', '=', 'mr.menu_id')
+        ->where('mrp.role_id', $role->id)
+        ->groupBy('mp.menu_id', 'mrp.role_id', 'mp.id')
+        ->get();
+        dd($menu_permissions);
+        return response(['data' => $role, 'menu_permissions' => $menu_permissions, 'menu_ids' => $menu_ids, 'menu_permission_ids' => null]);
     }
 
     /**
@@ -101,6 +107,7 @@ class RoleController extends Controller
                     'name' => ['required',  Rule::unique('roles')->ignore($request->id)],
                     'permissions' => ['required', 'array'],
                     'menu_ids' => ['required', 'array'],
+                    // 'menu_permission_ids' => ['required', 'array'],
                 ]);
         
                 // Validation check
@@ -109,47 +116,50 @@ class RoleController extends Controller
                 }
         
                 $data = $validator->validated();
-        
                 // Detach existing menu relations
                 $role->menus()->detach();
                 // Delete related menu permissions
-                DB::table('menu_permissions')
-                    ->whereNotIn('menu_id', $data['menu_ids'])
+                DB::table('menu_permission')
+                    ->whereIn('id', $data['menu_ids'])
                     ->delete();
 
-        
-                // Update the role with the new data
+                DB::table('menu_role_permission')
+                    ->where('role_id', $role->id)
+                    // ->whereIn('menu_id', $data['menu_permission_ids'])
+                    ->delete();
+                    
+                    // Update the role with the new data
                 $data['updated_by'] = $email;
                 $role->update($data);
-        
+                    
                 // Attach new menu relations
                 $role->menus()->attach($data['menu_ids']);
         
-                // Insert new menu permissions
-                $dataToInsert = [];
-                foreach ($data['permissions'] as $menu_id => $permissions) {
-                    foreach ($permissions as $permission) {
-                        $exists =  DB::table('menu_permissions')->where('menu_id', $menu_id)->where('permission_id', $permission)->exists();
-                        if(!$exists){
-                            $dataToInsert[] = [
-                                'menu_id' => $menu_id,
-                                'permission_id' => $permission,
-                                'created_at' => now(),
-                            ];
-                        }
+                array_map(function($permission_ids, $menu_id) use($role){
+                    foreach($permission_ids as $id){
+                        $menu_permission_id = DB::table('menu_permission')->insertGetId([
+                            'menu_id' => $menu_id,
+                            'permission_id' => $id,
+                        ]);
+
+                        DB::table('menu_role_permission')->insert([
+                            'role_id' => $role->id,
+                            'menu_permission_id' => $menu_permission_id,
+                            'created_at' => now(),
+                        ]);
                     }
-                }
-                if($dataToInsert){
-                    DB::table('menu_permissions')->insert($dataToInsert);
-                }
-        
+                },$data['permissions'], array_keys($data['permissions']));
+
                 // Retrieve and return relevant data
                 $menu_ids = $role->menus->pluck('id');
-                $menu_permissions = DB::table('menu_permissions')
-                    ->select(DB::raw("GROUP_CONCAT(permission_id SEPARATOR ',') as permissions"), "menu_id")
-                    ->whereIn('menu_id', $menu_ids)
-                    ->groupBy('menu_id')
-                    ->get();
+       
+                $menu_permissions = DB::table('menu_permission as mp')
+                ->select('mp.id','mp.menu_id', 'mrp.role_id', DB::raw('GROUP_CONCAT(mp.permission_id SEPARATOR ",") as permissions'))
+                ->join('menu_role_permission as mrp', 'mp.id', '=', 'mrp.menu_permission_id')
+                ->join('menu_role as mr', 'mp.menu_id', '=', 'mr.menu_id')
+                ->where('mrp.role_id', $role->id)
+                ->groupBy('mp.menu_id', 'mrp.role_id', 'mp.id')
+                ->get();
         
                 return response(['data' => $role, 'menu_ids' => $menu_ids, 'menu_permissions' => $menu_permissions]);
             });

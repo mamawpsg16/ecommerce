@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('menu_role', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('menu_id');
-            $table->foreignId('role_id');
-            $table->boolean('active')->default(true);
+            $table->foreignId('menu_id')->constrained();
+            $table->foreignId('role_id')->constrained();
             $table->timestamps();
 
             $table->index('menu_id');
             $table->index('role_id');
         });
+        
     }
 
     /**

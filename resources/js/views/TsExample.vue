@@ -46,7 +46,7 @@ export default defineComponent({
             ] as Job[],
             order: 'title' as term,
             order_type: 'asc' as type,
-            isSaving:25 as string,
+            isSaving:"25" as string,
             order_types: [
                 {
                     name:'Ascending',
@@ -74,6 +74,21 @@ export default defineComponent({
         handleSortType(type : type){
             this.order_type = type;
         },
+
+        helloWorld(){
+            const identified_user = "kevin";
+            const users = [{
+                name:'kevin',
+            },
+            {
+                name:'bam',
+            }]
+            const result = users.find(s => s.name == identified_user);
+            console.log(result,'result');
+        }
+    },
+    mounted(){
+        this.helloWorld()
     }
 })
 </script>

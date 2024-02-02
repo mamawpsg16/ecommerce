@@ -17,15 +17,13 @@ class Menu extends Model
         $query->where('active', true);
     }
 
-    public function permissions()
-    {
-        return $this->belongsToMany(Menu::class, 'menu_permissions', 'menu_id', 'permission_id')
-            ->withPivot('active')
-            ->withTimestamps();
-    }
-
     public function roles()
     {
         return $this->belongsToMany(Role::class)->withPivot('active')->withTimestamps();
+    }
+
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class)->withPivot('active')->withTimestamps();
     }
 }
