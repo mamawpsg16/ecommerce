@@ -1,7 +1,7 @@
 <template>
     <Modal class="modal-lg" targetModal="item-details-modal" :modaltitle="item.name" :backdrop="true" :escKey="false">
         <template #body>
-            <form @submit.prevent="updateConfirmation" class="m-3" id="item-details-form">
+            <form @submit.prevent="updateConfirmation" class="m-1" id="item-details-form">
                 <div class="row mb-3">
                     <div class="d-flex flex-column align-items-center text-end">
                         <img :src="image ?? defaultItemImage" class="img-fluid mb-4 rounded"
@@ -19,7 +19,19 @@
                         </template>
                     </div>
                 </div>
-                <div class="row justify-content-end mb-3">
+                <div class="row justify-content-center mb-3">
+                    <div class="col-md-6">
+                        <label class="mb-1">Event <span class="text-danger" v-if="edit">*</span></label>
+                        <VueMultiselect v-if="edit" :loading="loadingEvents" :disabled="loadingEvents" :class="{ inputInvalidClass : checkInputValidity('item','event',['required'])}" v-model="item.event" track-by="label" label="label" placeholder="Event" :options="events"></VueMultiselect>
+                        <Input type="text" v-else :disabled="!edit" v-model="item.event_name" :class="{ inputInvalidClass: checkInputValidity('item', 'event', ['required']) }" required autocomplete="item_event" />
+                        <div  v-if="v$.item.event.$dirty" :class="{ 'text-danger': checkInputValidity('item','event',['required'])}">
+                            <span v-if="v$.item.event.required.$invalid">
+                                Event is required.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="row justify-content-end mb-3">
                     <div class="col-4">
                         <label>Order <span class="text-danger" v-if="edit">*</span></label>
                         <Input type="text" :disabled="!edit" v-model="item.order" :class="{ inputInvalidClass: checkInputValidity('item', 'order', ['required']) }" required autocomplete="item_order" />
@@ -33,7 +45,7 @@
                             {{ errors?.order[0] }}
                         </div>
                     </div>
-                </div>
+                </div> -->
 
                 <div class="row mb-3">
                     <div class="col-4">
@@ -93,6 +105,19 @@
                             {{ errors?.color[0] }}
                         </div>
                     </div>
+                    <div class="col-4">
+                        <label>Order <span class="text-danger" v-if="edit">*</span></label>
+                        <Input type="text" :disabled="!edit" v-model="item.order" :class="{ inputInvalidClass: checkInputValidity('item', 'order', ['required']) }" required autocomplete="item_order" />
+                        <div v-if="v$.item.order.$dirty"
+                            :class="{ 'text-danger': checkInputValidity('item', 'order', ['required']) }">
+                            <p v-if="v$.item.order.required.$invalid">
+                                Order is required.
+                            </p>
+                        </div>
+                        <div v-if="errors?.order" class="text-danger">
+                            {{ errors?.order[0] }}
+                        </div>
+                    </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-12">
@@ -150,6 +175,8 @@ import { swalConfirmation, SwalDefault } from '@/helpers/Notification/sweetAlert
         data(){
             return{
                 defaultItemImage: defaultItem,
+                events:[],
+                loadingEvents:false,
                 image:null,
                 delete_image:false,
                 file:null,
@@ -159,6 +186,7 @@ import { swalConfirmation, SwalDefault } from '@/helpers/Notification/sweetAlert
                     chance_rate:false,
                     order:false,
                     color:false,
+                    event:false,
                 }],
                 item:{
                     name:null,
@@ -166,6 +194,7 @@ import { swalConfirmation, SwalDefault } from '@/helpers/Notification/sweetAlert
                     quantity:null,
                     price:null,
                     color:null,
+                    event:null,
                 },
                 auth_token:`Bearer ${localStorage.getItem('auth-token')}`,
                 edit:false,
@@ -184,6 +213,7 @@ import { swalConfirmation, SwalDefault } from '@/helpers/Notification/sweetAlert
                     chance_rate: { required },
                     order: { required },
                     color: { required },
+                    event: { required },
                 },
             }
         },
@@ -195,46 +225,27 @@ import { swalConfirmation, SwalDefault } from '@/helpers/Notification/sweetAlert
         },
 
         async created(){
-            await this.getCategories()
-            await this.getShops()
+            this.getEvents();
         },
 
         methods:{
-            async getCategories(){
-                this.loadingCategories = true;
-                await axios.get('/api/admin/get-categories', { 
+            async getEvents(){
+                this.loadingEvents = true;
+                await axios.get('/api/raffle/get-events', { 
                     headers: {
                         Authorization: this.auth_token
                     }
                 })
                 .then((response) => {
-                    const { categories } = response.data;
-                    this.categories = categories;
-                    
-                    this.loadingCategories = false;
+                    const { events } = response.data;
+                    this.events = events;
+                    this.loadingEvents = false;
                 })
                 .catch((error) =>{
                     console.log(error,'error');
                 });
             },
 
-            async getShops(){
-                this.loadingShops = true;
-                await axios.get('/api/get-shops', { 
-                    headers: {
-                        Authorization: this.auth_token
-                    }
-                })
-                .then((response) => {
-                    const { shops } = response.data;
-                    this.shops = shops;
-                    
-                    this.loadingShops = false;
-                })
-                .catch((error) =>{
-                    console.log(error,'error');
-                });
-            },
 
             resetForm() {
                 this.image   = null;
@@ -291,6 +302,8 @@ import { swalConfirmation, SwalDefault } from '@/helpers/Notification/sweetAlert
                         status:data.active ? 'Active' : 'Inactive',
                         created_at: formatDateSlash(data.created_at),
                         updated_at: formatDateSlash(data.updated_at),
+                        event_name:data.event.name,
+                        event:{label:data.event.name, value:data.event.id},
                 }
                 return details;
             },
@@ -320,6 +333,7 @@ import { swalConfirmation, SwalDefault } from '@/helpers/Notification/sweetAlert
                 formData.append('color', this.item.color);
                 formData.append('delete_image', this.delete_image);
                 formData.append('active', this.item.active ? 1 : 0);
+                formData.append('event_id', this.item.event.value);
 
                 axios.post('/api/raffle/update-item',formData,{
                     headers:{

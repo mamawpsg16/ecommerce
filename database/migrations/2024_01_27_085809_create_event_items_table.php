@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('event_items', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('event_id')->constrained();
             $table->string('name',150);
             $table->string('description',150)->nullable();
             $table->integer('quantity');
@@ -24,6 +25,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index('name');
+            $table->index('event_id');
         });
     }
 

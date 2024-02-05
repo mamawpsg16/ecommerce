@@ -20,6 +20,7 @@
                         <td :style="{ backgroundColor: data.color }"></td>
                         <td>{{ data.chance_rate }}</td>
                         <td>{{ data.order }}</td>
+                        <td>{{ data.event_name }}</td>
                         <td> 
                             <div class="dropdown" >
                                 <button :class="`btn btn-sm rounded-pill  btn-secondary dropdown-toggle px-4 btn-${data.active ? 'success' : 'danger'}`"  type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -94,6 +95,11 @@ import { get } from '@/helpers/Export/index.js';
                         sort:''
                     },
                     {
+                        name:'Event',
+                        field:'event',
+                        sort:''
+                    },
+                    {
                         name:'Status',
                         field:'status',
                         sort:''
@@ -147,6 +153,8 @@ import { get } from '@/helpers/Export/index.js';
                 const details = {                            
                         ...data,
                         status:data.active ? 'Active' : 'Inactive',
+                        event_name:data.event.name,
+                        event:{label:data.event.name, value:data.event.id},
                         created_at: formatDateSlash(data.created_at),
                         updated_at: formatDateSlash(data.updated_at),
                 }

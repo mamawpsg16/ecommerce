@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Raffle;
 use App\Models\Raffle\Item;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Rules\UniqueOrderForEvent;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+
 
 class ItemController extends Controller
 {
@@ -17,8 +19,7 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $items = Item::latest()->get();
-
+        $items = Item::with(['event'])->latest()->get();
         return response(['items' => $items]);
     }
 
@@ -36,6 +37,7 @@ class ItemController extends Controller
                     'quantity'      => ['required'],
                     'chance_rate'   => ['required'],
                     'color'         => ['required'],
+                    'event_id'      => ['required'],
                 ]);
         
                 if ($validator->fails()) {
@@ -45,7 +47,6 @@ class ItemController extends Controller
                 $data = $validator->validated();
 
                 $item = Item::create($data);
-
                 $this->uploadImage($request, $item);
         
                 return response(['item' => $item]);
@@ -62,7 +63,7 @@ class ItemController extends Controller
      */
     public function show(Item $item)
     {
-        return response(['data' => $item]);
+        return response(['data' => $item->load(['event'])]);
     }
 
     /**
@@ -79,10 +80,11 @@ class ItemController extends Controller
                     'description'   => ['sometimes'],
                     'quantity'      => ['required'],
                     'chance_rate'   => ['required'],
-                    'order'         => ['required', Rule::unique('event_items')->ignore($request->id)],
+                    'order'         => ['required',new UniqueOrderForEvent($request->event_id, $request->id)],
                     'color'         => ['required'],
                     'active'        => ['required'],
-                    'delete_image'        => ['required'],
+                    'delete_image'  => ['required'],
+                    'event_id'      => ['required'],
                 ]);
         
                 if ($validator->fails()) {
@@ -98,7 +100,7 @@ class ItemController extends Controller
                 $this->uploadImage($request, $item, true);
 
                 
-                return response(['data' => $item]);
+                return response(['data' => $item->load(['event'])]);
             });
     
         } catch (\Exception $e) {
@@ -115,8 +117,10 @@ class ItemController extends Controller
         //
     }
 
-    public function items(){
-        $items = Item::select('id','name','chance_rate','quantity','image','color','order')->active()->orderBy('order')->get();
+    public function items(Request $request){
+        $event_id = request('event_id');
+        $items = Item::select('id','name','chance_rate','quantity','image','color','order')->active()->where('event_id',$event_id)->orderBy('order')->get();
+
         return response(['items' => $items]);
     }
 
@@ -134,11 +138,10 @@ class ItemController extends Controller
 
                 $data = $validator->validated();
 
-                $event = Item::findOrFail($data['id']);
+                $item = Item::findOrFail($data['id']);
 
-                $event->update(['active' => $data['status']]);
-                
-                return response(['data' => $event]);
+                $item->update(['active' => $data['status']]);
+                return response(['data' => $item ]);
             });
     
         } catch (\Exception $e) {

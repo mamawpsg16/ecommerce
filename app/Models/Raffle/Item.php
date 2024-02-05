@@ -2,6 +2,7 @@
 
 namespace App\Models\Raffle;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,8 +18,18 @@ class Item extends Model
 
     protected static function booted()
     {
+       
         static::creating(function ($model) {
-            $model->order = self::max('order') + 1;
+            // Assuming you have 'event_id' and 'order' columns in your table
+            $event_id = $model->event_id;
+
+            // Get the maximum order for the given event_id
+            $maxOrder = DB::table('event_items')
+                ->where('event_id', $event_id)
+                ->max('order');
+
+            // Set the order for the new record
+            $model->order = $maxOrder + 1;
         });
     }
     
@@ -33,5 +44,9 @@ class Item extends Model
         return new Attribute(
             get: fn () => asset("storage".$asset),
         );
+    }
+
+    public function event(){
+        return $this->belongsTo(Event::class);
     }
 }

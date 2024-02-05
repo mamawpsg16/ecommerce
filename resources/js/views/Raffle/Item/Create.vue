@@ -1,7 +1,7 @@
 <template>
     <Modal class="modal-lg" targetModal="create-item-modal" modaltitle="Add Item" :backdrop="true" :escKey="false">
         <template #body>
-            <form @submit.prevent="storeConfirmation" class="m-3" id="create-item-form">
+            <form @submit.prevent="storeConfirmation" class="m-1" id="create-item-form">
                 <div class="row mb-3">
                     <div class="d-flex flex-column align-items-center text-end">
                         <img :src="image ?? defaultItemImage" class="img-fluid mb-4 rounded"
@@ -14,6 +14,17 @@
                         </div>
                         <div v-if="errors?.image" class="text-danger">
                             {{ errors?.image[0] }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-center mb-3">
+                    <div class="col-md-6">
+                        <label class="mb-1">Event <span class="text-danger">*</span></label>
+                        <VueMultiselect :loading="loadingEvents" :disabled="loadingEvents" :class="{ inputInvalidClass : checkInputValidity('item','event',['required'])}" v-model="item.event" track-by="label" label="label" placeholder="Event" :options="events"></VueMultiselect>
+                        <div  v-if="v$.item.event.$dirty" :class="{ 'text-danger': checkInputValidity('item','event',['required'])}">
+                            <span v-if="v$.item.event.required.$invalid">
+                                Event is required.
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -121,12 +132,16 @@ export default {
                 quantity: 1,
                 chance_rate: 1,
                 color: null,
+                event:null,
             },
+            events:[],
+            loadingEvents:false,
             errors:[{
                     name:false,
                     quantity:false,
                     chance_rate:false,
                     color:false,
+                    event:false,
                 }],
             isSaving: false,
             auth_token: `Bearer ${localStorage.getItem('auth-token')}`,
@@ -139,6 +154,7 @@ export default {
                 quantity: { required },
                 chance_rate: { required },
                 color: { required },
+                event: { required },
             },
         }
     },
@@ -152,9 +168,26 @@ export default {
 
     },
     async created() {
-      
+        await this.getEvents();
     },
     methods: {
+        async getEvents(){
+                this.loadingEvents = true;
+                await axios.get('/api/raffle/get-events', { 
+                    headers: {
+                        Authorization: this.auth_token
+                    }
+                })
+                .then((response) => {
+                    const { events } = response.data;
+                    this.events = events;
+                    this.loadingEvents = false;
+                })
+                .catch((error) =>{
+                    console.log(error,'error');
+                });
+        },
+        
         removeImage() {
             this.file = null;
             this.image = this.defaultItemImage;
@@ -187,6 +220,7 @@ export default {
                 quantity: 1,
                 chance_rate: 1,
                 color: null,
+                event: null,
             };
             document.querySelector('#create-item-form').reset();
             this.v$.$reset();
@@ -206,6 +240,7 @@ export default {
             formData.append('quantity', this.item.quantity);
             formData.append('chance_rate', this.item.chance_rate);
             formData.append('color', this.item.color);
+            formData.append('event_id', this.item.event.value);
 
             axios.post('/api/raffle/items', formData, {
                 headers: {
