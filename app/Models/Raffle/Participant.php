@@ -12,7 +12,7 @@ class Participant extends Model
     protected $guarded = ['id'];
 
     public function events(){
-        return $this->belongsToMany(Event::class);
+        return $this->belongsToMany(Event::class)->withTimestamps();
     } 
     
 }

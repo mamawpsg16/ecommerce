@@ -5,6 +5,9 @@
                 <router-link class="ms-5 text-dark" :to="{ name: 'home' }">
                     <i class="fa-solid fa-house fs-5  icon-option" alt="home"></i>
                 </router-link>
+                <router-link class="text-dark" :to="{ name: 'dashboard' }" alt="dashboard">
+                    <i class="fa-solid fa-chart-simple fs-3"></i>
+                </router-link>
                 <VueMultiselect v-model="search" @select="onSelectProduct" @remove="onRemoveProduct" @input="debouncedCheckProductExistence($event)" :loading="isLoading" :preserveSearch="true" :closeOnSelect="false" placeholder="Search..." :options="options" style="width:80%;" class="ms-3"  label="label" track-by="label"></VueMultiselect>
                 <div class="d-flex align-items-center z-3 position-relative">
                     <router-link type="button" to="/cart" class="text-dark position-relative">
@@ -23,12 +26,18 @@
                         </router-link>
                         <ul class="dropdown-menu" id="menu-picker">
                             <router-link class="dropdown-item" :to="{ name: 'users' }">Users</router-link>
-                            <router-link class="dropdown-item" :to="{ name: 'registration-index' }">Registration</router-link>
                             <router-link class="dropdown-item" :to="{ name: 'shop-index' }">Shops</router-link>
                             <router-link class="dropdown-item" :to="{ name: 'product-index' }">Products</router-link>
-                            <router-link class="dropdown-item" :to="{ name: 'roles' }">Roles</router-link>
-                            <router-link class="dropdown-item" :to="{ name: 'permissions' }">Permissions</router-link>
                             <router-link class="dropdown-item" :to="{ name: 'menus' }">Menus</router-link>
+                            <router-link class="dropdown-item" :to="{ name: 'permissions' }">Permissions</router-link>
+                            <router-link class="dropdown-item" :to="{ name: 'roles' }">Roles</router-link>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <router-link class="dropdown-item" :to="{ name: 'event-index' }">Events</router-link>
+                            <router-link class="dropdown-item" :to="{ name: 'item-index' }">Items</router-link>
+                            <router-link class="dropdown-item" :to="{ name: 'registration-index' }">Registration</router-link>
+                            <router-link class="dropdown-item" :to="{ name: 'participant-index' }">Participants</router-link>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>

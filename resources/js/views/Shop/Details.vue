@@ -6,11 +6,13 @@
         <div class="col-10 mx-auto my-2">
             <div class="col-12">
                 <div class="card p-1 mb-3">
-                    <div class="d-flex align-items-center">
-                        <img :src="shop.shop_image" class="img-fluid rounded" style="height: 100px; width: 100px; object-fit: contain;" alt="Shop Image">
+                    <div class="d-flex align-items-center ms-5">
+                        <div class="me-5">
+                            <img :src="shop.shop_image" class="img-fluid rounded" style="height: 100px; width: 100px; object-fit: contain; margin:0; padding: 0;" alt="Shop Image">
+                            <p class="fs-5">{{ shop.description }}</p>
+                        </div>
                         <div>
-                            <p>{{ shop.name }}</p>
-                            <p>{{ shop.description }}</p>
+                            <p class="fs-3">{{ shop.name }}</p>
                         </div>
                     </div>
                 </div>
@@ -27,21 +29,23 @@
                     </div>
                     <dataset-item class="row mb-3">
                         <template #default="{ row, rowIndex }">
-                            <div class="col-sm-6 col-md-3 mb-4">
-                                <div class="card mb-2 p-3" style="height:100% !important;">
-                                    <div class="card-body pt-3 pb-2 px-3">
-                                        <div class="text-center mb-2">
-                                            <img :src="row.product_image" class="img-fluid mb-3"
-                                                style="height: 280px; width: 280px;" alt="Default Profile Image">
+                            <div class="col-sm-12 col-md-3 mb-4">
+                                <router-link type="button" class="btn btn-md" :to="`/product/${row.slug}`">
+                                    <div class="card mb-2 p-3" style="height:100% !important;">
+                                        <div class="card-body pt-3 pb-2 px-3">
+                                            <div class="text-center mb-2">
+                                                <img :src="row.product_image" class="img-fluid mb-3"
+                                                    style="height: 280px; width: 280px;" alt="Default Profile Image">
+                                            </div>
+                                            <h3 class="card-title text-truncate mb-3" :title="`Index: ${rowIndex}`">
+                                                {{ row.name }}
+                                                <p class="card-text fs-6 text-center mt-1">{{ row.description ?? 'N/A' }}</p>
+                                            </h3>
+                                            <p class="card-text text-start fs-4" style="color:#F57224">₱{{ row.price }} </p>
+                                            <p class="card-text text-end">{{ row.updated_at }}</p>
                                         </div>
-                                        <h3 class="card-title text-truncate mb-3" :title="`Index: ${rowIndex}`">
-                                            {{ row.name }}
-                                            <p class="card-text fs-6 text-center mt-1">{{ row.description ?? 'N/A' }}</p>
-                                        </h3>
-                                        <p class="card-text text-start fs-4" style="color:#F57224">₱{{ row.price }} </p>
-                                        <p class="card-text text-end">{{ row.updated_at }}</p>
                                     </div>
-                                </div>
+                                </router-link>
                             </div>
                         </template>
                         <template #noDataFound>

@@ -1,10 +1,11 @@
 <template>
     <Modal class="modal-lg" targetModal="participant-registration-modal" modaltitle="Event Registration" :backdrop="true" :escKey="false">
         <template #body>
+            <!-- <Rouelette v-if="items.length" :items="items" :participant_id="participant_id" :event_id="event_id" @toggleConfetti="toggleConfettiComponent"/> -->
             <form-wizard @on-complete="registerConfirmation" finishButtonText="Register" ref="formWizard" subtitle="Event Registration" :validateOnBack="true" color="#3176FF">
                 <tab-content title="Personal Information" icon="fa-solid fa-user" :beforeChange="validateParticipantDetails">
-                    <div class="row justify-content-end mb-3">
-                        <div class="col-md-6 col-lg-4">
+                    <div class="row justify-content-center mb-3">
+                        <div class="col-md-6">
                             <label class="mb-1">Event <span class="text-danger">*</span></label>
                             <VueMultiselect :loading="loadingEvents" :disabled="loadingEvents" :class="{ inputInvalidClass : checkInputValidity('participant','event',['required'])}" v-model="participant.event" track-by="label" label="label" placeholder="Event" :options="events"></VueMultiselect>
                             <div  v-if="v$.participant.event.$dirty" :class="{ 'text-danger': checkInputValidity('participant','event',['required'])}">
@@ -14,8 +15,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 col-lg-4">
+                    <div class="row  mb-2">
+                        <div class="col-md-6">
                             <label class="mb-1">Name <span class="text-danger">*</span></label>
                             <Input type="text" placeholder="First Name" v-model="participant.name"  :class="{ inputInvalidClass : checkInputValidity('participant','name',['required'])}" required   autocomplete="name" />
                             <div  v-if="v$.participant.name.$dirty" :class="{ 'text-danger': checkInputValidity('participant','name',['required'])}">
@@ -25,17 +26,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6 col-lg-4">
-                            <label class="mb-1">Date of Birth <span class="text-danger">*</span></label>
-                            <VueDatePicker :class="{ inputInvalidClass : checkInputValidity('participant','birth_date',['required'])}"  v-model="participant.birth_date" placeholder="Date of Birth" format="MM-dd-yyyy" required></VueDatePicker>
-                            <div  v-if="v$.participant.birth_date.$dirty" :class="{ 'text-danger':  checkInputValidity('participant','birth_date',['required']) }">
-                                <p v-if="v$.participant.birth_date.required.$invalid">
-                                    Date of Birth is required.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 col-lg-4  mb-3">
+                        <div class="col-md-6">
                             <label class="mb-1">Email Address <span class="text-danger">*</span></label>
                             <Input type="email" placeholder="Email Address" v-model="participant.email"  :class="{ inputInvalidClass : checkInputValidity('participant','email',['required','email']) }" required/>
                             <div v-if="v$.participant.email.$dirty" :class="{ 'text-danger': checkInputValidity('participant','email',['required','email']) }">
@@ -47,8 +38,20 @@
                                 </p>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="col-md-6 col-lg-4  mb-3">
+                    <div class="row  mb-2">
+                        <div class="col-md-6">
+                            <label class="mb-1">Date of Birth <span class="text-danger">*</span></label>
+                            <VueDatePicker :class="{ inputInvalidClass : checkInputValidity('participant','birth_date',['required'])}"  v-model="participant.birth_date" placeholder="Date of Birth" format="MM-dd-yyyy" required></VueDatePicker>
+                            <div  v-if="v$.participant.birth_date.$dirty" :class="{ 'text-danger':  checkInputValidity('participant','birth_date',['required']) }">
+                                <p v-if="v$.participant.birth_date.required.$invalid">
+                                    Date of Birth is required.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
                             <label class="mb-1">Phone # <span class="text-danger">*</span></label>
                             <Input type="number"  placeholder="Phone Number"   v-model="participant.personal_phone_number" :class="{ inputInvalidClass : checkInputValidity('participant','personal_phone_number',['required', 'minLength', 'maxLength'])}"  required autocomplete="name" />
                             <div  v-if="v$.participant.personal_phone_number.$dirty" :class="{ 'text-danger':  checkInputValidity('participant','personal_phone_number',['required', 'minLength', 'maxLength'])}">
@@ -63,7 +66,9 @@
                                 </p>
                             </div>
                         </div>
-
+                    </div>
+                    
+                    <div class="row">
                         <div class="col-12">
                             <label class="mb-1">Address <span class="text-danger">*</span></label>
                             <textarea class="form-control" v-model="participant.address" :class="{ inputInvalidClass : checkInputValidity('participant','address',['required'])}" placeholder="Address " rows="2" required></textarea>
@@ -77,8 +82,8 @@
                     
                 </tab-content>
                 <tab-content title="Company Information" icon="fa-solid fa-building" :beforeChange="validateCompanyDetails">
-                    <div class="row">
-                        <div class="col-md-6 col-lg-4">
+                    <div class="row mb-2">
+                        <div class="col-md-6">
                             <label class="mb-1">Industry <span class="text-danger">*</span></label>
                             <Input type="text" placeholder="Industry" v-model="company_details.industry"  :class="{ inputInvalidClass : checkInputValidity('company_details','industry',['required'])}" required   autocomplete="name" />
                             <div  v-if="v$.company_details.industry.$dirty" :class="{ 'text-danger': checkInputValidity('company_details','industry',['required'])}">
@@ -88,43 +93,44 @@
                             </div>
                         </div>
 
-                        <div class="col-md-6 col-lg-4">
-                            <label class="mb-1">Company <span class="text-danger">*</span></label>
-                            <Input type="text" placeholder="Company" v-model="company_details.company" />
+                        <div class="col-md-6">
+                            <label class="mb-1">Company Name <span class="text-danger">*</span></label>
+                            <Input type="text" placeholder="Company" v-model="company_details.company" :class="{ inputInvalidClass : checkInputValidity('company_details','company',['required'])}" />
                             <div  v-if="v$.company_details.company.$dirty" :class="{ 'text-danger': checkInputValidity('company_details','company',['required'])}">
                                 <p v-if="v$.company_details.company.required.$invalid">
-                                    Company is required.
+                                    Company Name is required.
                                 </p>
                             </div>
                         </div>
-
-                        <div class="col-md-6 col-lg-4 mb-3">
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-md-6">
                             <label class="mb-1">Position <span class="text-danger">*</span></label>
                             <Input type="text" placeholder="Position" v-model="company_details.position"  :class="{ inputInvalidClass : checkInputValidity('company_details','position',['required'])}" autocomplete="position" required/>
                             <div  v-if="v$.company_details.position.$dirty" :class="{ 'text-danger': checkInputValidity('company_details','position',['required'])}">
                                 <p v-if="v$.company_details.position.required.$invalid">
-                                    Last Name is required.
+                                    Position is required.
                                 </p>
                             </div>
                         </div>
 
-                        <div class="col-md-6 col-lg-4 mb-3">
-                            <label class="mb-1">Company Phone # <span class="text-danger">*</span></label>
+                        <div class="col-md-6">
+                            <label class="mb-1">Company Phone #</label>
                             <Input type="number"  placeholder="Phone Number"   v-model="company_details.company_phone_number" :class="{ inputInvalidClass : checkInputValidity('company_details','company_phone_number',['minLength', 'maxLength'])}"  required autocomplete="name" />
                             <div  v-if="v$.company_details.company_phone_number.$dirty" :class="{ 'text-danger':  checkInputValidity('company_details','company_phone_number',[ 'minLength', 'maxLength'])}">
                                 <p v-if="v$.company_details.company_phone_number.minLength.$invalid">
-                                    Phone number must be at least 11 characters.
+                                    Company Phone # must be at least 11 characters.
                                 </p>
                                 <p v-if="v$.company_details.company_phone_number.maxLength.$invalid">
-                                    Phone number must be no more than 13 characters.
+                                    Company Phone # must be no more than 13 characters.
                                 </p>
                             </div>
                         </div>
-
-
+                    </div>
+                    <div class="row">
                         <div class="col-12">
                             <label class="mb-1">Company Address <span class="text-danger">*</span></label>
-                            <textarea class="form-control" v-model="company_details.company_address" :class="{ inputInvalidClass : checkInputValidity('company_details','company_address',['required'])}" placeholder="Company company_address " rows="2" required></textarea>
+                            <textarea class="form-control" v-model="company_details.company_address" :class="{ inputInvalidClass : checkInputValidity('company_details','company_address',['required'])}" placeholder="Company Address" rows="2" required></textarea>
                             <div  v-if="v$.company_details.company_address.$dirty" :class="{ 'text-danger':  checkInputValidity('company_details','company_address',['required'])}">
                                 <p v-if="v$.company_details.company_address.required.$invalid">
                                     Company Address is required.
@@ -133,33 +139,44 @@
                         </div>
                     </div>
                 </tab-content>
-                <!-- <template v-slot:next="props">
-                    <button type="button"  v-if="props.activeTabIndex  == 0" class="btn btn-md btn-primary me-1 px-5" :disabled="firstStepDisable">Next</button>
-                </template> -->
+                <template v-slot:footer="props">
+                    <div class="wizard-footer-left">
+                        <wizard-button  v-if="props.activeTabIndex > 0 && !props.isLastStep" @click.native="props.prevTab()" :style="props.fillButtonStyle">Previous</wizard-button>
+                    </div>
+                    <div class="wizard-footer-right">
+                        <button type="button" @click="resetForm()" class="btn btn-md btn-secondary me-1 px-3" alt="reset"><i class="fa-solid fa-rotate-left"></i></button>
+                        <wizard-button v-if="!props.isLastStep" @click.native="props.nextTab()" class="wizard-footer-right" :style="props.fillButtonStyle">Next</wizard-button>
+                        <button  v-else @click="registerConfirmation" type="submit" class="btn btn-md btn-primary me-1 px-3" alt="reset">Register</button>
+                    </div>
+                </template>
             </form-wizard>
         </template>
     </Modal>
 </template>
 
 <script>
+// import Rouelette from './Components/WheelOfFortune.vue';
 import Modal from '@/components/Modal/modal.vue';
 import Input from '@/components/Form/Input.vue'
-import {FormWizard, TabContent} from 'vue3-form-wizard'
+import {FormWizard, TabContent, WizardButton} from 'vue3-form-wizard'
 import VueDatePicker from '@vuepic/vue-datepicker';
 import { useVuelidate } from '@vuelidate/core'
 import { required, email, maxLength, minLength } from '@vuelidate/validators';
-import { swalConfirmation, swalSuccess, swalError, SwalDefault } from '@/helpers/Notification/sweetAlert.js';
+import { swalConfirmation, SwalDefault } from '@/helpers/Notification/sweetAlert.js';
 import { checkValidity } from '@/helpers/Vuelidate/InputValidation.js';
 import VueMultiselect from 'vue-multiselect'
-import debounce from 'lodash/debounce'; 
     export default {
-        name:'participant Registration',
+        name:'Participant Registration',
+        emits:['toggleConfetti'],
         setup () {
             return { v$: useVuelidate({ $autoDirty: true , participant: {} }) }
         },
         emits: ['loadUpdatedParticipants'],
         data(){
             return{
+                items:[],
+                participant_id:null,
+                event_id:null,
                 participant:{
                     name:null,
                     address:null,
@@ -206,7 +223,9 @@ import debounce from 'lodash/debounce';
             TabContent,
             Input,
             VueDatePicker,
-            VueMultiselect
+            VueMultiselect,
+            // Rouelette,
+            WizardButton
         },
         computed:{
            
@@ -249,7 +268,7 @@ import debounce from 'lodash/debounce';
                 return isValid;
             },
 
-            formReset(){
+            resetForm(){
                 this.participant = {
                     name:null,
                     email:null,
@@ -272,25 +291,10 @@ import debounce from 'lodash/debounce';
             },
 
             async register(){
-                if(!await this.v$.$validate()){
-                    return;
-                }
-
                 this.isSaving = true;
 
                 const birthDate = new Date(this.participant.birth_date);
-                const today = new Date();
-
-                // Calculate the difference in years
-                const age = today.getFullYear() - birthDate.getFullYear();
-
-                // Check if the birthday has occurred this year
-                const hasBirthdayOccurred = (today.getMonth() > birthDate.getMonth()) || 
-                                            (today.getMonth() === birthDate.getMonth() && today.getDate() >= birthDate.getDate());
-
-                // If birthday has not occurred yet this year, subtract 1 from age
-                const finalAge = hasBirthdayOccurred ? age : age - 1;
-
+              
                  // Ensure the month and day are formatted with leading zeros if needed
                  const formattedMonth = String(birthDate.getMonth() + 1).padStart(2, '0');
                 const formattedDay = String(birthDate.getDate()).padStart(2, '0');
@@ -301,7 +305,6 @@ import debounce from 'lodash/debounce';
                 const data = {
                     ...this.participant,
                     ...this.company_details,
-                    age:finalAge,
                     birth_date: formattedBirthDate, // Assign the formatted date string
                 };
                 
@@ -312,9 +315,12 @@ import debounce from 'lodash/debounce';
                     }
                 })
                 .then((response) => {
-                    const { message } = response.data;
+                    const { message, participant, event_id } = response.data;
                     this.isSaving = false;
-                    this.formReset();
+
+                    this.participant_id = participant.id;
+                    this.event_id = event_id;
+                    this.resetForm();
 
                     this.$emit('loadUpdatedParticipants');
 
@@ -322,7 +328,10 @@ import debounce from 'lodash/debounce';
                         icon: "success",
                         text: message,
                         showConfirmButton: false,
+                        timer:1500
                     });
+
+                    this.playRoulette();
                 })
                 .catch((error) => {
                       this.isSaving = false;
@@ -330,13 +339,63 @@ import debounce from 'lodash/debounce';
                 });
             },
 
-            registerConfirmation(){
+            async registerConfirmation(){
+                if(!await this.v$.$validate()){
+                    return;
+                }
                 swalConfirmation().then((result) => {
                     if (result.isConfirmed) {
                        this.register()
                     }
                 });
             },
+
+            async getItems(){
+                await axios.get('/api/raffle/get-items', { 
+                    headers: {
+                        Authorization: this.auth_token
+                    }
+                })
+                .then((response) => {
+                    const { items } = response.data;
+                    console.log(items,'items','create');
+                    const colors = ['#E7292D','#ED6722','#14284D',"#E6C805","#ED6722"];
+                    const formattedData = items.map(item =>{
+                        const index = Math.floor(Math.random() * colors.length);
+                      
+                        return{
+                            ...item,
+                            name:`(${item.quantity}) ${item.name}`,
+                            value:item.name,
+                            quantity:item.quantity,
+                            weight: item.chance_rate,
+                            color: '#ffffff',
+                            bgColor: colors[index],
+                        }
+                    })
+                    this.items = formattedData;
+                }).catch((error) =>{
+                    console.log(error,'ERROR');
+                });
+            },
+
+            toggleConfettiComponent(show){
+                this.$emit('toggleConfetti', show);
+            },
+            
+            async playRoulette(){
+                await this.getItems();
+                // this.isLoading = true;
+                const create_modal_id = document.getElementById('participant-registration-modal');
+                const create_modal = bootstrap.Modal.getOrCreateInstance(create_modal_id);
+                create_modal.hide();
+
+                setTimeout(() => {
+                    const id = document.getElementById('participant-roulette-modal');
+                    const modal = bootstrap.Modal.getOrCreateInstance(id);
+                    modal.show();
+                }, 700);
+            }, 
         },
 
         mounted(){

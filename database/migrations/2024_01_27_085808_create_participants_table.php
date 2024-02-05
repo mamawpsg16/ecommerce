@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('participants', function (Blueprint $table) {
             $table->id();
             $table->string('name',100);
-            $table->integer('age');
             $table->date('birth_date');
             $table->string('email',100);
             $table->text('address');

@@ -11,8 +11,6 @@
 </template>
 
 <script>
-import FortuneWheel from 'vue-fortune-wheel'
-import 'vue-fortune-wheel/style.css'
     export default {
         components:{
             FortuneWheel
