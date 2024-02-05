@@ -360,6 +360,9 @@ import VueMultiselect from 'vue-multiselect'
 
             async getItems(){
                 await axios.get('/api/raffle/get-items', { 
+                    params:{
+                        event_id:this.event_id
+                    },
                     headers: {
                         Authorization: this.auth_token
                     }

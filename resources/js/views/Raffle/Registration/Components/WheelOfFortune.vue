@@ -49,7 +49,7 @@ import { SwalDefault } from '@/helpers/Notification/sweetAlert.js';
                     lineHeight: 20,
                     textRadius:230,
                     fontSize: 20,
-                    textLength:18,
+                    textLength:17,
                     textDirection:'vertical',
                     btnText:"GO"
                 },
